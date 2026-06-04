@@ -7,7 +7,8 @@ def split_the_text_by_delimiter text, del
     buf += peak
 
     if buf[-del.length, del.length] == del && !consumer.literaling
-      tokens << buf[0, buf.length - del.length] unless buf.empty?
+      content = buf[0, buf.length - del.length]
+      tokens << content unless content.empty?
       buf = ''
     end
 
@@ -19,9 +20,9 @@ end
 
 def split_the_text_by_pipe text
   tokens = split_the_text_by_delimiter text, '|>'
-  return tokens.map {
-    |token| token.strip
-  }
+  return tokens.map do
+    |token| return token.strip
+  end
 end
 
 def split_the_text_by_space text
