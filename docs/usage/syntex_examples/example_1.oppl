@@ -1,0 +1,8 @@
+file : regex ".*proj":dir . : {
+    a |> b |> var aaa
+
+    c |> ee |> ff:r:
+      |> hi l k |> sub {
+        yaaa |> var jkl
+      }
+}
