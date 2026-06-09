@@ -5,15 +5,25 @@ require_relative '../src/oppl/processor.rb'
 include Processor
 include Parse
 
-oppl_file = ARGV[0]
+oppl_cmd  = ARGV[0]
+oppl_file = ARGV[1]
 
-if oppl_file.nil?
-  puts "Usage: ruby main.rb <oppl_file>"
+if oppl_cmd.nil? || oppl_file.nil?
+  puts "Usage: ruby main.rb <oppl_cmd> <oppl_file>"
   exit(1)
 end
 
-file_text = Processor.chomp_comment(File.read(oppl_file))
-token = Parse.parse_instr_token StringConsumer.new(file_text), {}
+if !File.exist?(oppl_file)
+  puts "Error: File '#{oppl_file}' does not exist."
+  exit(1)
+end
+
+file_content = File.read(oppl_file)
+consumer = StringConsumer.new file_content
 
 require 'pp'
-pp token
+if oppl_cmd == 'tokenize'
+  include Tokenize
+  pp(Tokenize.tokenize(consumer))
+  exit 0
+end
