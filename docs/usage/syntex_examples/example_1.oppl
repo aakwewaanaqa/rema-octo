@@ -1,4 +1,4 @@
-file : regex ".*proj":dir . : {
+file : regex ".*proj":dir . : { #123
     a |> b |> var aaa
 
     c |> ee |> ff:r:

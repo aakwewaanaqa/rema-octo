@@ -1,5 +1,3 @@
-
-
 class StringConsumer
   attr_reader :literaling
   attr_reader :index
@@ -34,6 +32,11 @@ class StringConsumer
   def rest
     return nil if done?
     @str[@index + 1..]
+  end
+
+  def sneak_peek
+    return nil if done?
+    return @str[@index + 1]
   end
 
   def match_sneak_peak candidates
@@ -87,6 +90,8 @@ class StringConsumer
   end
 
   def readable_pos
+    return { line: 1 + @readable_pos_offset[:line], column: 1 + @readable_pos_offset[:column] } if @index < 0
+
     line = 1 + @str[0..@index].count("\n")
     last_newline_index = @str.rindex("\n", @index) || -1
     column = @index - last_newline_index + 1
