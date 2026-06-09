@@ -33,10 +33,10 @@ module Parse
     next_instr_token        = nil
     block_token             = nil
     colon_tokens            = nil
-    expect_next_instr_first = false
+    after_new_line          = false
 
     candidates = ['|>', '{', '}', "\r", "\n", " ", "\t", '_ANY_CHAR_']
-    while peak = consumer.match_and_advance!(candidates)
+    while peak = consumer.match_advance(candidates)
       if consumer.literaling
         text += peak
         next
@@ -52,6 +52,7 @@ module Parse
       end
 
       if peak == '|>'
+        ctx[:inPipe] = true
         piped_instr_token = parse_instr_token consumer, ctx
         break
       end
@@ -63,9 +64,9 @@ module Parse
 
       break if peak.nil?
     
-      if peak == "\n" || peak == "\r" || expect_next_instr_first
-        expect_next_instr_first = true
-        next if consumer.match_sneak_peak?(["\n", "\r", " ", "\t"])
+      if peak == "\n" || peak == "\r"
+        after_new_line = true
+        next if consumer.match_sneak_peak(["\n", "\r", " ", "\t"])
         next_instr_token = parse_instr_token consumer, ctx
         break
       end
@@ -78,10 +79,11 @@ module Parse
     colon_tokens = parse_instr_colon_token colons_consumer, {}
 
     return {
-      colon_tokens:      colon_tokens,
-      piped_instr_token: piped_instr_token,
-      next_instr_token:  next_instr_token,
-      block_token:       block_token,
+      :inPipe =>            ctx[:inPipe] || false,
+      :colon_tokens =>      colon_tokens,
+      :piped_instr_token => piped_instr_token,
+      :next_instr_token =>  next_instr_token,
+      :block_token =>       block_token,
     }
   end
 end

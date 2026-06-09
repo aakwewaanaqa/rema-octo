@@ -1,3 +1,5 @@
+
+
 class StringConsumer
   attr_reader :literaling
   attr_reader :index
@@ -29,70 +31,43 @@ class StringConsumer
     @index >= @str.length - 1
   end
 
-  def sneak_peek!
+  def rest
     return nil if done?
-    @str[@index + 1]
+    @str[@index + 1..]
   end
 
-  def match_sneak_peak? candidates
+  def match_sneak_peak candidates
     return nil if done?
 
-    candidates.each do |str|
-      is_any_char = str == '_ANY_CHAR_'
-      str_length = is_any_char ? 1 : str.length
-      start_index = @index + 1
-      next if str_length == 0
-      next if (start_index + str_length) > @str.length
-
-      is_match = is_any_char || (@str[start_index, str_length] == str)
-      return true if is_match
-    end
-
-    return false
-  end
-
-  def match_and_advance! candidates
-    return nil if done?
-
-    candidates.each do |str|
-      is_any_char = str == '_ANY_CHAR_'
-      str_length = is_any_char ? 1 : str.length
-      start_index = @index + 1
-      next if str_length == 0
-      next if (start_index + str_length) > @str.length
-
-      is_match = is_any_char || (@str[start_index, str_length] == str)
-      if is_match
-        advance_step = str_length
-        result = ''
-        for _ in 0...advance_step do
-          result += advance!
-        end
-        return result
-      end
+    candidates.each do |pattern|
+      match = pattern.match rest
+      return match if match
     end
 
     return nil
   end
 
-  def advance_ahead_skip? str, skipped_characters
-    i = @index + 1
-    j = 0
-    last_matched_i = nil
-    while j < str.length && i < @str.length
-      ch = @str[i]
-      if skipped_characters.include?(ch)
-        i += 1
-        next
-      end
-      return false if ch != str[j]
-      last_matched_i = i
-      i += 1
-      j += 1
+  def str_advance str
+    return nil if done?
+    return nil unless rest.start_with? str
+
+    @index += str.length
+    return str
+  end
+
+  def match_advance candidates
+    return nil if done?
+
+    candidates.each do |pattern|
+      match = pattern.match rest
+      next if match.nil?
+
+      # advance 位置到 match 結束
+      @index += match[0].length
+      return match[0]
     end
-    return false unless j == str.length
-    @index = last_matched_i
-    true
+
+    return nil
   end
 
   # 前進一個字元，並更新 @literaling 狀態，回傳新位置的字元；超界回傳 nil
