@@ -1,161 +1,161 @@
 module Tokenize
   Token = Struct.new(:type, :text, :readable_pos)
 
-  def do_spaces consumer
-    return nil if consumer.literaling || consumer.done?
+  DO_SPACES = -> sc {
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
+    pos = sc.readable_pos
     text = ''
-    peak = consumer.sneak_peek
+    peak = sc.sneak_peek
     while peak == ' ' || peak == "\t"
-      text += consumer.advance!
-      peak = consumer.sneak_peek
+      text += sc.advance!
+      peak = sc.sneak_peek
     end
 
     return nil if text.empty?
     return Token.new(:spaces, text, pos)
-  end
+  }
 
-  def do_new_line consumer 
-    return nil if consumer.literaling || consumer.done?
+  DO_NEW_LINE = -> sc { 
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
+    pos = sc.readable_pos
     text = ''
-    peak = consumer.sneak_peek
+    peak = sc.sneak_peek
     while peak == "\n" || peak == "\r"
-      text += consumer.advance!
-      peak = consumer.sneak_peek
+      text += sc.advance!
+      peak = sc.sneak_peek
     end
 
     return nil if text.empty?
     return Token.new(:new_line, text, pos)
-  end
+  }
 
-  def do_pipe consumer
-    return nil if consumer.literaling || consumer.done?
+  DO_PIPE = -> sc {
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
-    if consumer.str_advance '|>'
+    pos = sc.readable_pos
+    if sc.str_advance '|>'
       return Token.new(:pipe, '|>', pos)
     end
 
     return nil
-  end
+  }
 
-  def do_identifier consumer
-    return nil if consumer.literaling || consumer.done?
+  DO_IDENTIFIER = -> sc {
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
+    pos = sc.readable_pos
     text = ''
-    peak = consumer.sneak_peek
+    peak = sc.sneak_peek
     while /[a-zA-Z0-9_.]/.match(peak)
-      text += consumer.advance!
-      peak = consumer.sneak_peek
+      text += sc.advance!
+      peak = sc.sneak_peek
       break if peak.nil?
     end
 
     return nil if text.empty?
     return Token.new(:identifier, text, pos)
-  end
+  }
 
-  def do_literal consumer
-    return nil if consumer.literaling || consumer.done?
+  DO_LITERAL = -> sc {
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
+    pos = sc.readable_pos
     text = ''
-    peak = consumer.sneak_peek
+    peak = sc.sneak_peek
     if peak == "'" || peak == '"' || peak == '`'
-      text += consumer.advance!
-      while consumer.literaling
-        text += consumer.advance!
-        break if consumer.done?
+      text += sc.advance!
+      while sc.literaling
+        text += sc.advance!
+        break if sc.done?
       end
     end
 
     return nil if text.empty?
     return Token.new(:literal, text, pos)
-  end
+  }
 
-  def do_colon consumer
-    return nil if consumer.literaling || consumer.done?
+  DO_COLON = -> sc {
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
-    if consumer.str_advance ':'
+    pos = sc.readable_pos
+    if sc.str_advance ':'
       return Token.new(:colon, ':', pos)
     end
 
     return nil
-  end
+  }
 
-  def do_open_brace consumer
-    return nil if consumer.literaling || consumer.done?
+  DO_OPEN_BRACE = -> sc {
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
-    if consumer.str_advance '{'
+    pos = sc.readable_pos
+    if sc.str_advance '{'
       return Token.new(:open_brace, '{', pos)
     end
 
     return nil
-  end
+  }
 
-  def do_close_brace consumer
-    return nil if consumer.literaling || consumer.done?
+  DO_CLOSE_BRACE = -> sc {
+    return nil if sc.literaling || sc.done?
     
-    pos = consumer.readable_pos
-    if consumer.str_advance '}'
+    pos = sc.readable_pos
+    if sc.str_advance '}'
       return Token.new(:close_brace, '}', pos)
     end
 
     return nil
-  end
+  }
 
-  def do_comment consumer
-      return nil if consumer.literaling || consumer.done?
-      
-      pos = consumer.readable_pos
-      text = ''
-      if consumer.str_advance '#'
-        text += '#'
-        peak = consumer.sneak_peek
-        while peak != "\n" && peak != "\r" && !consumer.done?
-          text += consumer.advance!
-          peak = consumer.sneak_peek
-        end
+  DO_COMMENT = -> sc {
+    return nil if sc.literaling || sc.done?
+    
+    pos = sc.readable_pos
+    text = ''
+    if sc.str_advance '#'
+      text += '#'
+      peak = sc.sneak_peek
+      while peak != "\n" && peak != "\r" && !sc.done?
+        text += sc.advance!
+        peak = sc.sneak_peek
       end
-  
-      return nil if text.empty?
-      return Token.new(:comment, text, pos)
-  end
+    end
 
-  def tokenize consumer
+    return nil if text.empty?
+    return Token.new(:comment, text, pos)
+  }
+
+  TOKENIZE = -> sc {
     tokens = []
-    while consumer.done? == false
-      if token = do_spaces(consumer) || 
-                 do_new_line(consumer) || 
-                 do_literal(consumer) || 
-                 do_pipe(consumer) || 
-                 do_identifier(consumer) || 
-                 do_colon(consumer) || 
-                 do_open_brace(consumer) || 
-                 do_close_brace(consumer) || 
-                 do_comment(consumer)
+    while sc.done? == false
+      if token = DO_SPACES.(sc) || 
+                 DO_NEW_LINE.(sc) || 
+                 DO_LITERAL.(sc) || 
+                 DO_PIPE.(sc) || 
+                 DO_IDENTIFIER.(sc) || 
+                 DO_COLON.(sc) || 
+                 DO_OPEN_BRACE.(sc) || 
+                 DO_CLOSE_BRACE.(sc) || 
+                 DO_COMMENT.(sc)
         tokens << token
       else
-        peak = consumer.advance!
-        tokens << Token.new(:unknown, peak, consumer.readable_pos)
+        peak = sc.advance!
+        tokens << Token.new(:unknown, peak, sc.readable_pos)
       end
     end
 
     return tokens
-  end
+  }
 end
 
 def split_the_text_by_delimiter text, del 
-  consumer = StringConsumer.new text
+  sc = StringConsumer.new text
   tokens = []
   buf = ''
   
-  while peak = consumer.advance!
+  while peak = sc.advance!
     buf += peak
 
     if buf[-del.length, del.length] == del && !consumer.literaling
