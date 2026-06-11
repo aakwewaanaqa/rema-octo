@@ -1,5 +1,5 @@
 module Tokenize
-  Token = Struct.new(:type, :text, :readable_pos)
+  Token = Struct.new(:last, :text, :readable_pos)
 
   DO_SPACES = -> sc {
     return nil if sc.literaling || sc.done?

@@ -7,23 +7,51 @@ module Ast
       @data = data
     end
 
+    def [] key
+      @data[key]
+    end
+
+    def []= key, val
+      @data[key] = val
+    end
+
     def ok?
       return @data[:ok]
     end
 
-    def if_ok(fn = nil, &block)
-      callable = fn || block
-      ok? ? callable.call(self) : self
+    def error?
+      return @data[:error]
     end
 
-    def if_fail(fn = nil, &block)
-      callable = fn || block
-      ok? ? self : callable.call(self)
+    def terminated?
+      return @data[:terminated]
     end
 
-    def next(fn = nil, &block)
-      callable = fn || block
-      callable.call(self)
+    def next_if_ok fn
+      return self if @data[:terminated]
+      ok? ? fn.call(self) : self
+    end
+
+    def if_fail fn
+      return self if @data[:terminated]
+      ok? ? self : fn.call(self)
+    end
+
+    def terminate_if predicate, on_terminate = nil
+      return self if @data[:terminated]
+      @data[:terminated] = true if predicate.(self)
+      if @data[:terminated] then on_terminate.(self) unless on_terminate.nil? end
+      self
+    end
+
+    def next fn
+      return self if @data[:terminated]
+      fn.call(self)
+    end
+
+    def resume
+      @data[:terminated] = false
+      self
     end
   end
 
@@ -48,7 +76,7 @@ module Ast
       end
     end
     Ast::AstFlowResult.new(flow.tc, {
-      :type => 'EAT_LEADING_SPACE',
+      :last => 'EAT_LEADING_SPACE',
       :line_crossed => line_crossed,
       :ok => ok 
     })
@@ -67,7 +95,7 @@ module Ast
     end
 
     AstFlowResult.new(flow.tc, {
-      :type => 'EAT_NAME',
+      :last => 'EAT_NAME',
       :name => name,
       :ok => !name.empty?
     })
@@ -82,24 +110,104 @@ module Ast
     end
 
     AstFlowResult.new(flow.tc, {
-      :type => 'EAT_PIPE',
+      :last => 'EAT_PIPE',
       :ok => ok
     })
   }
 
-  EAT_INSTR = -> flow {
-    instr_name = ''
+  EAT_INSTR = -> in_pipe, flow {
+    instr_name = nil
+    instr_args = []
+    instr_mods = {}
+    block_instr = nil
     pipe_instr = nil
+    next_instr = nil
 
-    flow
-    .next(EAT_LEADING_SPACE).next(EAT_NAME).if_ok { |flow| 
-      instr_name = flow.data.name 
+    _INSERT_TO_FLOW = -> flow {
+      instr_args = instr_args.empty? ? nil : instr_args
+      instr_mods = instr_mods.empty? ? nil : instr_mods
+      flow[:instr] = {
+        :instr_name => instr_name,
+        :instr_args => instr_args,
+        :instr_mods => instr_mods,
+        :block_instr => block_instr,
+        :pipe_instr => pipe_instr,
+        :next_instr => next_instr,
+      }
+      return flow
+    }
+
+    _NAME_LOOP = -> array_to_push, flow {
       flow
-    }.next(EAT_LEADING_SPACE).next(EAT_PIPE).if_ok { |flow| 
-      pipe_instr = EAT_INSTR.call(flow).data
+        .next EAT_LEADING_SPACE
+        .terminate_if -> flow { !flow.ok? }
+        .terminate_if -> flow { flow[:line_crossed] }
+        .next EAT_NAME
+        .terminate_if -> flow { !flow.ok? }
+        .next_if_ok -> flow { array_to_push << flow[:name]; flow }
+        .next_if_ok _NAME_LOOP.(array_to_push) # Recursive Again
+        .resume
+    }.curry
+
+    _ARG_LOOP = -> flow {
       flow
-    }.next()
-  }
+        .next EAT_LEADING_SPACE
+        .terminate_if -> flow { flow[:line_crossed] }
+        .next EAT_NAME
+        .terminate_if -> flow { !flow.ok? }
+        .next_if_ok -> flow { instr_name = flow[:name]; flow }
+        .next _NAME_LOOP.(instr_args)
+        .resume
+    }
+
+    _MOD_LOOP = -> flow {
+      flow = flow.next EAT_LEADING_SPACE
+      return flow if flow[:line_crossed]
+      flow = flow.next EAT_NAME
+      return flow if flow.ok? == false
+      
+      mod_key = flow[:name]
+      mod_args = []
+      flow = flow.next(_NAME_LOOP.(mod_args))
+      instr_mods[mod_key] = mod_args
+      return flow if flow[:line_crossed]
+
+      flow = flow.next EAT_COLON
+      return flow if flow.ok? == false
+      return flow.next _MOD_LOOP
+    }
+
+    _ON_NEWLINE = -> flow {
+      return flow if in_pipe
+      flow = flow.next EAT_OPEN_BRACE
+      if flow.ok?
+        flow = flow.next(EAT_INSTR.(false))
+        block_instr = flow[:instr]
+      end
+
+      flow = flow.next EAT_PIPE
+      if flow.ok?
+        flow = flow.next(EAT_INSTR.(true))
+        pipe_instr = flow[:instr]
+      end
+
+      flow = flow.next(EAT_INSTR.(false))
+      next_instr = flow[:instr] # nil when EOF
+      return flow
+    }
+
+    flow = flow.next _ARG_LOOP
+    return flow[:error] = "Expected instruction name, got #{flow.tc.sneak_peek.type}" if instr_name.nil?
+    return flow.next _ON_NEWLINE if flow[:line_crossed]
+    flow = flow.next EAT_CLOSE_BRACE
+    return flow if flow.ok?
+  
+    flow = flow.next _MOD_LOOP
+    return flow.next _ON_NEWLINE if flow[:line_crossed]
+    flow = flow.next EAT_CLOSE_BRACE
+    return flow if flow.ok?
+
+  }.curry
 
   def parse token_consumer
     

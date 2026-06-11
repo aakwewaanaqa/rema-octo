@@ -6,3 +6,35 @@ file : regex ".*proj":dir . : { #123
         yaaa |> var jkl
       }
 }
+
+case 1 {
+  a:b
+}
+
+case 2 {
+  a : b
+}
+
+case 3 {
+  a|>b
+}
+
+case 4 {
+  a |> b
+}
+
+case 5 {
+  a
+  |> b
+}
+
+case 6 {
+  a b
+}
+
+case 7 {
+  a {
+    
+  }
+}
+
