@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
-require_relative "../oppl/shared/string_consumer"
-require_relative "../oppl/tokenize"
+require_relative "../oppl"
 
 class TestTokenizeLine < Minitest::Test
   def test_single_token

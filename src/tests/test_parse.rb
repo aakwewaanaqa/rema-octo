@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
-require_relative "../oppl/shared/string_consumer"
-require_relative "../oppl/tokenize"
-require_relative "../oppl/parse"
+require_relative "../oppl"
 
 module ParseHelper
   include Parse

@@ -1,0 +1,15 @@
+module Ast
+  module Instr
+    class InstrNode
+      def initialize: (?bool in_pipe) -> void
+
+      attr_accessor name: String?
+      attr_accessor args: Array[String]
+      attr_accessor mods: Hash[String, Array[String]]
+      attr_accessor block_instr: InstrNode?
+      attr_accessor pipe_instr: InstrNode?
+      attr_accessor next_instr: InstrNode?
+      attr_accessor in_pipe: bool
+    end
+  end
+end

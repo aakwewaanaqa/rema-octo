@@ -2,10 +2,7 @@
 
 require "minitest/autorun"
 require "pp"
-require_relative "../oppl/shared/string_consumer"
-require_relative "../oppl/shared/token_consumer"
-require_relative "../oppl/tokenize"
-require_relative "../oppl/ast"
+require_relative "../oppl"
 
 class TestAST < Minitest::Test
   include Tokenize

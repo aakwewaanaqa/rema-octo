@@ -1,29 +1,34 @@
-require_relative '../src/oppl/shared/string_consumer.rb'
-require_relative '../src/oppl/tokenize.rb'
-require_relative '../src/oppl/parse.rb'
-require_relative '../src/oppl/processor.rb'
-include Processor
-include Parse
+require 'json'
+require_relative '../src/oppl'
 
-oppl_cmd  = ARGV[0]
-oppl_file = ARGV[1]
+include Tokenize
+include Ast
+include Ast::Instr
+include Iterate
 
-if oppl_cmd.nil? || oppl_file.nil?
-  puts "Usage: ruby main.rb <oppl_cmd> <oppl_file>"
+def fail!(code, message, fix)
+  puts JSON.generate({
+    ok: false,
+    error: { code: code, message: message },
+    fix: fix
+  })
   exit(1)
 end
 
-if !File.exist?(oppl_file)
-  puts "Error: File '#{oppl_file}' does not exist."
-  exit(1)
-end
+oppl_file = ARGV[0]
+
+fail!("MISSING_ARG", "No .oppl file provided", "Usage: ruby bin/main.rb <file.oppl>") if oppl_file.nil?
+fail!("FILE_NOT_FOUND", "File '#{oppl_file}' does not exist", "Check that the file path is correct") unless File.exist?(oppl_file)
 
 file_content = File.read(oppl_file)
-consumer = StringConsumer.new file_content
+tc = TokenConsumer.new(TOKENIZE.(StringConsumer.new(file_content)))
+parse_result = EAT_INSTR.(false, AstFlowResult.new(tc, {}))
 
-require 'pp'
-if oppl_cmd == 'tokenize'
-  include Tokenize
-  pp(Tokenize.tokenize(consumer))
-  exit 0
+unless parse_result.ok?
+  err = parse_result[:error]
+  fail!("PARSE_ERROR", err[:message], "Fix the syntax error in your .oppl file at #{err[:readable_pos]}")
 end
+
+result = iterate(parse_result[:instr])
+
+puts JSON.generate({ ok: true, result: result })
