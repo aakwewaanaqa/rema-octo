@@ -18,7 +18,6 @@ module Parse
     end
 
     parts = split_the_text_by_space text.strip
-    next_instr_colon = nil if next_instr_colon && next_instr_colon[:name].nil?
     return {
       text:             text,
       name:             parts[0],

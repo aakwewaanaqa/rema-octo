@@ -3,3 +3,14 @@ do.test:
 
 do.test.ast:
 	make do.test 1=ast
+
+do.test.parse:
+	make do.test 1=parse
+
+do.test.tokenize:
+	make do.test 1=tokenize
+
+do.test.all:
+	make do.test.ast
+	make do.test.parse
+	make do.test.tokenize

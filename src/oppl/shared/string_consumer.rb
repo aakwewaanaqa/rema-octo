@@ -43,8 +43,7 @@ class StringConsumer
     return nil if done?
 
     candidates.each do |pattern|
-      match = pattern.match rest
-      return match if match
+      return pattern if rest.start_with?(pattern)
     end
 
     return nil
@@ -62,12 +61,15 @@ class StringConsumer
     return nil if done?
 
     candidates.each do |pattern|
-      match = pattern.match rest
-      next if match.nil?
+      if pattern == '_ANY_CHAR_'
+        return advance!
+      end
 
-      # advance 位置到 match 結束
-      @index += match[0].length
-      return match[0]
+      if rest.start_with?(pattern)
+        result = ''
+        pattern.length.times { result += advance! }
+        return result
+      end
     end
 
     return nil

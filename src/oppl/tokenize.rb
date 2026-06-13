@@ -158,7 +158,7 @@ def split_the_text_by_delimiter text, del
   while peak = sc.advance!
     buf += peak
 
-    if buf[-del.length, del.length] == del && !consumer.literaling
+    if buf[-del.length, del.length] == del && !sc.literaling
       content = buf[0, buf.length - del.length]
       tokens << content unless content.empty?
       buf = ''
@@ -173,7 +173,7 @@ end
 def split_the_text_by_pipe text
   tokens = split_the_text_by_delimiter text, '|>'
   return tokens.map do
-    |token| return token.strip
+    |token| token.strip
   end
 end
 
