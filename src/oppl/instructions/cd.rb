@@ -1,8 +1,14 @@
 module Instructions
-  REGISTRY['cd'] = -> args, mods, block_fn, pipe_val {
-    path = args[0]
-    return { ok: false, error: { code: "MISSING_ARG", message: "cd requires a path" }, fix: "cd <path>" } if path.nil?
+  class Cd
+    def self.check args, mods, val, &block 
+      return 'missing args[0]' if args.nil? || args.empty?
+      nil
+    end
 
-    SAFE_EXEC.("Check that '#{path}' exists and is a directory") { Dir.chdir(path) }
-  }
+    def self.call args, mods, val, &block 
+      path = File.expand_path(args[0])
+      Dir.chdir path
+      Dir.pwd
+    end
+  end
 end

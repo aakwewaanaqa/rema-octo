@@ -18,3 +18,6 @@ do.test.all:
 	make do.test.parse
 	make do.test.tokenize
 	make do.test.iterate
+
+do.repl:
+	ruby bin/repl.rb
