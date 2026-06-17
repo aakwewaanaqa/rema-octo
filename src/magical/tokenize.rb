@@ -1,9 +1,40 @@
 module Magical
   module Tokenize
-    Token = Struct.new(:last, :text, :readable_pos)
+    TOKENIZE = -> (txt, magical_comment = /#~|\/{2}~/) {
+      tokenize = -> sc {
+        tokens = []
+        while sc.done? == false
+          if token = Shared::DO_SPACES.(sc) || 
+                     Shared::DO_LITERAL.(sc) || 
+                     Shared::DO_SEMI_COLON.(sc) || 
+                     Shared::DO_IDENTIFIER.(sc) || 
+                     Shared::DO_QUESTION_MARK.(sc) || 
+                     Shared::DO_EXCLAIMATION.(sc) || 
+                     Shared::DO_COMMENT.(sc)
+            tokens << token
+          else
+            peak = sc.advance
+            tokens << Shared::Token.new(:unknown, peak, sc.readable_pos)
+          end
+        end
+    
+        return tokens
+      }
 
-    def tokenize txt, readable_pos_offset
-      
-    end
+      lc = Shared::LineConsumer.new txt
+      tokens = []
+      while peak = lc.advance
+        code, comment = peak.split magical_comment
+        code_token = Shared::Token.new(:code, code, lc.readable_pos)
+        tokens << code_token
+        if comment && !comment.empty?
+          sc = Shared::StringConsumer.new comment
+          sc.readable_pos_offset = lc.readable_pos
+          tokens.concate tokenize.(sc)
+        end
+      end
+
+      tokens
+    }
   end
 end
