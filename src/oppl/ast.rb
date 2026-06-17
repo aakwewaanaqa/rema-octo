@@ -237,7 +237,7 @@ module Ast
         .pipe(EAT_SPACES)
         .pipe(EAT_NAME)
         .terminate_if(-> flow { !flow.ok? })
-        .on_ok(-> flow { mod_key = flow[:name] })
+        .on_ok(-> flow { mod_key = flow[:name].to_sym })
         .pipe(NAME_SUB.(mod_args))
         .on_ok(-> flow { instr_node.mods[mod_key] = mod_args })
         .pipe(EAT_SPACES)

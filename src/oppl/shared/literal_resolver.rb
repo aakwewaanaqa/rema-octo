@@ -9,7 +9,7 @@ module Shared
       branch_tag = nil
       while peak = sc.sneak_peek
         # detect begining of code
-        if !sc.literaling && !in_brach && match = sc.match_advance(/(.)\{/)
+        if !sc.literaling && !branch_tag && match = sc.match_advance(/(.)\{/)
           chuncks << {last: :txt, txt: cache} unless cache.empty?
           cache = ''
           branch_tag = match.captures[0].to_sym
@@ -23,10 +23,10 @@ module Shared
           next
         end
         
-        cache += sc.advance
+        cache += sc.advance!
       end
       # push last cached into chunks
-      chuncks << {last: branch_tag, txt: cache} unless cache.empty?
+      chuncks << {last: branch_tag || :txt, txt: cache} unless cache.empty?
       @chuncks = chuncks
     end
 

@@ -62,7 +62,7 @@ class StringConsumer
     _rest = rest
     match = pattern.match _rest
     to_s = match.to_s
-    return match unless !_rest.start_with(to_s)
+    return match unless !_rest.start_with?(to_s)
     
     nil
   end

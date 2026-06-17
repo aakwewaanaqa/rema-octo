@@ -19,5 +19,5 @@ do.test.all:
 	make do.test.tokenize
 	make do.test.iterate
 
-do.repl:
+repl:
 	ruby bin/repl.rb

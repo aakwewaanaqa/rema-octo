@@ -1,0 +1,12 @@
+txt "123"
+txt "123"
+txt "123"
+txt "123"
+txt "123"
+txt "123"
+txt "123"
+exit
+txt "123" |> write .tmp
+exit
+txt "123" |> write .tmp
+exit

@@ -1,6 +1,7 @@
 require_relative "oppl/shared/string_consumer"
 require_relative "oppl/shared/token_consumer"
 require_relative "oppl/shared/context"
+require_relative "oppl/shared/literal_resolver"
 require_relative "oppl/processor"
 require_relative "oppl/tokenize"
 require_relative "oppl/ast"
