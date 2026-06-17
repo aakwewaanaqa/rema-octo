@@ -10,3 +10,4 @@ txt "123" |> write .tmp
 exit
 txt "123" |> write .tmp
 exit
+exit

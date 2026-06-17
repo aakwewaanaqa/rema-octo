@@ -7,11 +7,11 @@ module ParseHelper
   include Parse
 
   def colon_token(str)
-    parse_instr_colon_token(StringConsumer.new(str), {})
+    parse_instr_colon_token(Shared::StringConsumer.new(str), {})
   end
 
   def instr_token(str, ctx = {})
-    parse_instr_token(StringConsumer.new(str), ctx)
+    parse_instr_token(Shared::StringConsumer.new(str), ctx)
   end
 end
 

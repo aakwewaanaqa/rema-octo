@@ -12,15 +12,18 @@ def resolve_val(v, ctx)
 end
 
 def dispatch(node, val = nil, ctx = Shared::Context.new)
-  klass = Instructions.const_get(node.name.capitalize)
+  klass = begin
+    Instructions.const_get(node.name.capitalize)
+  rescue NameError
+    puts "Unknown: #{node.name}"
+    return
+  end
   r_args = node.args&.map { |a| resolve_val(a, ctx) } || []
   r_mods = node.mods&.transform_values { |v| resolve_val(v, ctx) } || {}
   r_val  = resolve_val(val, ctx)
   block_fn = node.block_instr ? -> (child_ctx, v = nil) { dispatch(node.block_instr, v, child_ctx) } : nil
   wrapped = block_fn ? proc { |v = nil| block_fn.(ctx.child, v) } : nil
   klass.(r_args, r_mods, r_val, ctx, &wrapped)
-rescue NameError
-  puts "Unknown: #{node.name}"
 end
 
 def run_node(node, val = nil, ctx = Shared::Context.new)

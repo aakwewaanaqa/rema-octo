@@ -10,7 +10,7 @@ class TestAST < Minitest::Test
   include Ast::Instr
 
   def make_flow str
-    tc = TokenConsumer.new(TOKENIZE.(StringConsumer.new(str)))
+    tc = Shared::TokenConsumer.new(TOKENIZE.(Shared::StringConsumer.new(str)))
     AstFlowResult.new(tc, {})
   end
 

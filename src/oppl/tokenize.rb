@@ -8,7 +8,7 @@ module Tokenize
     text = ''
     peak = sc.sneak_peek
     while peak == ' ' || peak == "\t"
-      text += sc.advance!
+      text += sc.advance
       peak = sc.sneak_peek
     end
 
@@ -23,7 +23,7 @@ module Tokenize
     text = ''
     peak = sc.sneak_peek
     while peak == "\n" || peak == "\r"
-      text += sc.advance!
+      text += sc.advance
       peak = sc.sneak_peek
     end
 
@@ -49,7 +49,7 @@ module Tokenize
     text = ''
     peak = sc.sneak_peek
     while /[a-zA-Z0-9_.~]/.match(peak)
-      text += sc.advance!
+      text += sc.advance
       peak = sc.sneak_peek
       break if peak.nil?
     end
@@ -65,9 +65,9 @@ module Tokenize
     text = ''
     peak = sc.sneak_peek
     if peak == "'" || peak == '"' || peak == '`'
-      text += sc.advance!
+      text += sc.advance
       while sc.literaling
-        text += sc.advance!
+        text += sc.advance
         break if sc.done?
       end
     end
@@ -118,7 +118,7 @@ module Tokenize
       text += '#'
       peak = sc.sneak_peek
       while peak != "\n" && peak != "\r" && !sc.done?
-        text += sc.advance!
+        text += sc.advance
         peak = sc.sneak_peek
       end
     end
@@ -141,7 +141,7 @@ module Tokenize
                  DO_COMMENT.(sc)
         tokens << token
       else
-        peak = sc.advance!
+        peak = sc.advance
         tokens << Token.new(:unknown, peak, sc.readable_pos)
       end
     end
@@ -151,11 +151,11 @@ module Tokenize
 end
 
 def split_the_text_by_delimiter text, del 
-  sc = StringConsumer.new text
+  sc = Shared::StringConsumer.new text
   tokens = []
   buf = ''
   
-  while peak = sc.advance!
+  while peak = sc.advance
     buf += peak
 
     if buf[-del.length, del.length] == del && !sc.literaling

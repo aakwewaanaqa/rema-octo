@@ -3,7 +3,7 @@ module Shared
     attr_reader :chuncks
 
     def initialize pure_string_with_quote
-      sc = StringConsumer.new pure_string_with_quote[1..-2]
+      sc = Shared::StringConsumer.new pure_string_with_quote[1..-2]
       chuncks = []
       cache = ''
       branch_tag = nil
@@ -23,7 +23,7 @@ module Shared
           next
         end
         
-        cache += sc.advance!
+        cache += sc.advance
       end
       # push last cached into chunks
       chuncks << {last: branch_tag || :txt, txt: cache} unless cache.empty?

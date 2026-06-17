@@ -9,7 +9,7 @@ class TestIterate < Minitest::Test
   include Iterate
 
   def make_node str
-    tc = TokenConsumer.new(TOKENIZE.(StringConsumer.new(str)))
+    tc = Shared::TokenConsumer.new(TOKENIZE.(Shared::StringConsumer.new(str)))
     flow = AstFlowResult.new(tc, {})
     EAT_INSTR.(false, flow)[:instr]
   end
