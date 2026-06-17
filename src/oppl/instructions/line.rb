@@ -3,7 +3,7 @@ module Instructions
     def self.check
       
     end
-    def self.call args, mods, val, &block
+    def self.call args, mods, val, ctx, &block
       lines = val.split "\n"
       lines[args[0].to_i]
     end

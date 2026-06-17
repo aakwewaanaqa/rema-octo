@@ -57,22 +57,14 @@ class StringConsumer
     return str
   end
 
-  def match_advance candidates
+  def match_advance pattern
     return nil if done?
-
-    candidates.each do |pattern|
-      if pattern == '_ANY_CHAR_'
-        return advance!
-      end
-
-      if rest.start_with?(pattern)
-        result = ''
-        pattern.length.times { result += advance! }
-        return result
-      end
-    end
-
-    return nil
+    _rest = rest
+    match = pattern.match _rest
+    to_s = match.to_s
+    return match unless !_rest.start_with(to_s)
+    
+    nil
   end
 
   # 前進一個字元，並更新 @literaling 狀態，回傳新位置的字元；超界回傳 nil

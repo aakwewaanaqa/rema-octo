@@ -1,9 +1,9 @@
 module Instructions
   class Find
-    def self.check args, mods = nil, val = nil, &block
-      
+    def self.check args, mods, val, ctx, &block
+
     end
-    def self.call args, mods = nil, val = nil, &block
+    def self.call args, mods, val, ctx, &block
       results = []
       pattern = Regexp.new args[0]
       Dir.each_child('.') { |child|

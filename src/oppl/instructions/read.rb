@@ -1,10 +1,10 @@
 module Instructions
   class Read
-    def self.check args, mods, val, &block
+    def self.check args, mods, val, ctx, &block
       
     end
 
-    def self.call args, mods, val, &block
+    def self.call args, mods, val, ctx, &block
       targets = []
 
       args.each { |arg|
