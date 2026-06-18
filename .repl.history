@@ -11,3 +11,16 @@ exit
 txt "123" |> write .tmp
 exit
 exit
+exit
+cd docs
+cd docs
+cd docs
+cd docs
+cd usage
+cd examples
+read example_2.cs |> scope '//#' '//#'
+cd docs/usage/examples
+exit
+cd docs/usage/examples
+read example_2.cs |> scope '//#' '//#'
+exit

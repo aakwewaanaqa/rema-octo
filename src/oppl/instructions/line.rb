@@ -5,7 +5,7 @@ module Oppl
       end
 
       def self.call args, mods, val, ctx, &block
-        lines = val.split "\n"
+        lines = val.split(/\R/)
         lines[args[0].to_i]
       end
     end

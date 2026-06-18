@@ -4,7 +4,7 @@ include Oppl::Tokenize
 include Oppl::Ast
 include Oppl::Ast::Instr
 
-HISTORY_FILE = './.repl.history'
+HISTORY_FILE = File.join(Dir.pwd, '.repl.history')
 
 def resolve_val(v, ctx)
   return v unless v.is_a?(String) && v.length >= 2 && v[0] == v[-1] && %w[" '].include?(v[0])
@@ -38,6 +38,38 @@ def run_node(node, val = nil, ctx = Shared::Context.new)
   end
 end
 
+def run_line(line)
+  tc = TokenConsumer.new(TOKENIZE.(StringConsumer.new(line)))
+  parse_result = EAT_INSTR.(false, AstFlowResult.new(tc, {}))
+  if parse_result.ok?
+    run_node(parse_result[:instr], nil, Shared::Context.new)
+  else
+    puts parse_result[:error]&.dig(:message) || "parse error"
+  end
+end
+
+# -e "command" 模式
+if (idx = ARGV.index('-e'))
+  run_line(ARGV[idx + 1])
+  exit
+end
+
+# pipe / stdin 模式
+unless $stdin.tty?
+  buffer = ''
+  $stdin.each_line do |line|
+    stripped = line.chomp
+    if stripped.strip.start_with?('|>') && !buffer.empty?
+      buffer += ' ' + stripped.strip
+    else
+      run_line(buffer) unless buffer.empty?
+      buffer = stripped
+    end
+  end
+  run_line(buffer) unless buffer.empty?
+  exit
+end
+
 require 'readline'
 
 if File.exist?(HISTORY_FILE)
@@ -47,11 +79,5 @@ end
 while (line = Readline.readline('> ', true))
   next if line.strip.empty?
   File.open(HISTORY_FILE, 'a') { |f| f.puts line }
-  tc = TokenConsumer.new(TOKENIZE.(StringConsumer.new(line)))
-  parse_result = EAT_INSTR.(false, AstFlowResult.new(tc, {}))
-  if parse_result.ok?
-    run_node(parse_result[:instr], nil, Shared::Context.new)
-  else
-    puts parse_result[:error]&.dig(:message) || "parse error"
-  end
+  run_line(line)
 end

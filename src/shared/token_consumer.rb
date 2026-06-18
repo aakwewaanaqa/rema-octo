@@ -19,5 +19,9 @@ module Shared
       @index += 1
       return @tokens[@index]
     end
+
+    def readable_pos
+      sneak_peek&.readable_pos
+    end
   end
 end

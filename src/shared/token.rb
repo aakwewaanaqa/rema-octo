@@ -77,7 +77,7 @@ module Shared
     pos = sc.readable_pos
     text = ''
     peak = sc.sneak_peek
-    while /[a-zA-Z0-9_.~]/.match(peak)
+    while /[a-zA-Z0-9_.~\/]/.match(peak)
       text += sc.advance
       peak = sc.sneak_peek
       break if peak.nil?
