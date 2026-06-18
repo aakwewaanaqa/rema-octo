@@ -10,8 +10,9 @@ module Shared
         if peak.last == :new_line
           lines << cache # we also appends empty line
           cache = []
+        else
+          cache << peak
         end
-        cache << peak
       end
       @lines = lines # Array[Array[Shared::Token]]
       @index = -1

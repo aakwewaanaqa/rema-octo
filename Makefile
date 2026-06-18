@@ -19,6 +19,9 @@ do.test.magical.tokenize:
 do.test.magical.ast:
 	make do.test 1=magical_ast
 
+do.test.magical.iterate:
+	make do.test 1=magical_iterate
+
 do.test.all:
 	make do.test.ast
 	make do.test.parse
@@ -26,6 +29,7 @@ do.test.all:
 	make do.test.iterate
 	make do.test.magical.tokenize
 	make do.test.magical.ast
+	make do.test.magical.iterate
 
 repl:
 	ruby bin/repl.rb
