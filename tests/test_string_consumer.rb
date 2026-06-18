@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
-require_relative "../shared/string_consumer"
+require_relative "../src/src"
 
 class TestStringConsumer < Minitest::Test
   def test_advance_returns_chars_in_order

@@ -1,8 +1,8 @@
-require_relative '../src/oppl'
+require_relative '../src/src'
 
-include Tokenize
-include Ast
-include Ast::Instr
+include Oppl::Tokenize
+include Oppl::Ast
+include Oppl::Ast::Instr
 
 HISTORY_FILE = './.repl.history'
 
@@ -13,7 +13,7 @@ end
 
 def dispatch(node, val = nil, ctx = Shared::Context.new)
   klass = begin
-    Instructions.const_get(node.name.capitalize)
+    Oppl::Instructions.const_get(node.name.capitalize)
   rescue NameError
     puts "Unknown: #{node.name}"
     return

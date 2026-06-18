@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
-require_relative "../oppl"
+require_relative "../src/src"
 
 class TestTokenizeLine < Minitest::Test
+  include Oppl::Tokenize
   def test_single_token
     assert_equal ["word"], split_the_text_by_space("word")
   end
@@ -34,6 +35,7 @@ class TestTokenizeLine < Minitest::Test
 end
 
 class TestSplitByDelimiter < Minitest::Test
+  include Oppl::Tokenize
   def test_splits_by_colon
     assert_equal ["foo", "bar", "baz"], split_the_text_by_delimiter("foo:bar:baz", ":")
   end

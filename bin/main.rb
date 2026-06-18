@@ -1,10 +1,10 @@
 require 'json'
-require_relative '../src/oppl'
+require_relative '../src/src'
 
-include Tokenize
-include Ast
-include Ast::Instr
-include Iterate
+include Oppl::Tokenize
+include Oppl::Ast
+include Oppl::Ast::Instr
+include Oppl::Iterate
 
 def fail!(code, message, fix)
   puts JSON.generate({

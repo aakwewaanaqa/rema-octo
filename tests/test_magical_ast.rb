@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
-require_relative "../shared/readable_pos"
-require_relative "../shared/string_consumer"
-require_relative "../shared/line_consumer"
-require_relative "../shared/token_consumer"
-require_relative "../shared/tokenized_line_consumer"
-require_relative "../shared/token"
-require_relative "../shared/ast"
-require_relative "../magical/tokenize"
-require_relative "../magical/ast"
+require_relative "../src/shared/readable_pos"
+require_relative "../src/shared/string_consumer"
+require_relative "../src/shared/line_consumer"
+require_relative "../src/shared/token_consumer"
+require_relative "../src/shared/tokenized_line_consumer"
+require_relative "../src/shared/token"
+require_relative "../src/shared/ast"
+require_relative "../src/magical/tokenize"
+require_relative "../src/magical/ast"
 
 class TestMagicalAstEatSeparator < Minitest::Test
   include Magical::Ast::Instr

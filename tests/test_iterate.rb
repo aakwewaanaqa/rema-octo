@@ -1,12 +1,12 @@
 require 'pp'
 require 'minitest/autorun'
-require_relative '../oppl.rb'
+require_relative '../src/src'
 
 class TestIterate < Minitest::Test
-  include Tokenize
-  include Ast
-  include Ast::Instr
-  include Iterate
+  include Oppl::Tokenize
+  include Oppl::Ast
+  include Oppl::Ast::Instr
+  include Oppl::Iterate
 
   def make_node str
     tc = Shared::TokenConsumer.new(TOKENIZE.(Shared::StringConsumer.new(str)))

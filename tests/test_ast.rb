@@ -2,12 +2,12 @@
 
 require "minitest/autorun"
 require "pp"
-require_relative "../oppl"
+require_relative "../src/src"
 
 class TestAST < Minitest::Test
-  include Tokenize
-  include Ast
-  include Ast::Instr
+  include Oppl::Tokenize
+  include Oppl::Ast
+  include Oppl::Ast::Instr
 
   def make_flow str
     tc = Shared::TokenConsumer.new(TOKENIZE.(Shared::StringConsumer.new(str)))

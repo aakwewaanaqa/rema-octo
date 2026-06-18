@@ -111,7 +111,7 @@ module Shared
       .terminate_if(-> flow { !flow.ok? })
       .pipe(EAT_NAME)
       .terminate_if(-> flow { !flow.ok? })
-      .pipe(-> flow { array_to_push << flow[:name] })
+      .on_ok(-> flow { array_to_push << flow[:name] })
       .pipe(NAME_SUB.(array_to_push)) # Recursive Again
     })
   }.curry
