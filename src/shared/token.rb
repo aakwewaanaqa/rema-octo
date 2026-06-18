@@ -20,15 +20,11 @@ module Shared
     return nil if sc.literaling || sc.done?
     
     pos = sc.readable_pos
-    text = ''
-    peak = sc.sneak_peek
-    while peak == "\n" || peak == "\r"
-      text += sc.advance
-      peak = sc.sneak_peek
+    if match = sc.match_advance(/\R+/)
+      return Token.new(:new_line, match.to_s, pos)
     end
 
-    return nil if text.empty?
-    return Token.new(:new_line, text, pos)
+    nil
   }
 
   DO_PIPE = -> sc {
@@ -39,7 +35,7 @@ module Shared
       return Token.new(:pipe, '|>', pos)
     end
 
-    return nil
+    nil
   }
 
   DO_SEMI_COLON = -> sc {
@@ -47,18 +43,18 @@ module Shared
     
     pos = sc.readable_pos
     if sc.str_advance ';'
-      return Token.new(:pipe, ';', pos)
+      return Token.new(:semi_colon, ';', pos)
     end
 
     return nil
   }
 
-  DO_EXCLAIMATION = -> sc {
+  DO_EXCLAMATION = -> sc {
     return nil if sc.literaling || sc.done?
     
     pos = sc.readable_pos
     if sc.str_advance '!'
-      return Token.new(:pipe, '!', pos)
+      return Token.new(:exclamation, '!', pos)
     end
 
     return nil
@@ -69,7 +65,7 @@ module Shared
     
     pos = sc.readable_pos
     if sc.str_advance '?'
-      return Token.new(:pipe, '?', pos)
+      return Token.new(:question_mark, '?', pos)
     end
 
     return nil
@@ -147,7 +143,7 @@ module Shared
     
     pos = sc.readable_pos
     text = ''
-    if sc.str_advance '#'
+    if peak = sc.str_advance('#')
       text += '#'
       peak = sc.sneak_peek
       while peak != "\n" && peak != "\r" && !sc.done?

@@ -9,7 +9,7 @@ module Shared
       @index = -1         # 目前讀取位置（-1 表示尚未開始）
       @escaping = false
       @literaling = false # 目前在字串字面值內時記錄開頭引號（'、"、`），否則 false
-      @readable_pos_offset = { line: 0, column: 0 }
+      @readable_pos_offset = ReadablePos.new
     end
 
     # 目前字元是否被 \ 跳脫（連續偶數個 \ 視為互相抵消，不算跳脫）
@@ -88,12 +88,13 @@ module Shared
     end
 
     def readable_pos
-      return { line: 1 + @readable_pos_offset[:line], column: 1 + @readable_pos_offset[:column] } if @index < 0
+      return ((ReadablePos.new 1, 1) + @readable_pos_offset) if @index < 0
 
       line = 1 + @str[0..@index].count("\n")
       last_newline_index = @str.rindex("\n", @index) || -1
       column = @index - last_newline_index + 1
-      return { line: line + @readable_pos_offset[:line], column: column + @readable_pos_offset[:column] }
+      pos = ReadablePos.new line, column
+      pos += @readable_pos_offset
     end
   end
 end

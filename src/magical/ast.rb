@@ -1,0 +1,109 @@
+module Magical
+  module Ast
+    module Instr
+      include Shared
+
+      InstrNode = Struct.new(
+        :name,
+        :args,
+        :next_instr,
+      )
+
+      EAT_SEPERATOR = -> flow {
+        peak = flow.tc.sneak_peek
+        case peak.last
+        when :semi_colon
+          return AstFlowResult.new(flow.tc, {
+            last: :semi_colon,
+            ok: true
+          })
+        when :exclamation
+          return AstFlowResult.new(flow.tc, {
+            last: :exclamation,
+            ok: true
+          })
+        when :question_mark
+          return AstFlowResult.new(flow.tc, {
+            last: :question_mark,
+            ok: true
+          })
+        end
+
+        AstFlowResult.new(flow.tc, {
+          ok: false
+        })
+      }
+
+      EAT_INSTR = -> flow {
+        name = nil
+        args = []
+        next_instr = nil
+
+        flow
+          .subflow(-> flow { 
+            flow
+            .pipe(NAME_SUB.(names))
+            .terminate_if(-> flow {
+              args.empty?
+            })
+            .pipe(EAT_SEPERATOR)
+            .pipe(-> flow {
+              if flow[:ok]
+                case flow[:last]
+                when :question_mark
+                  name = :next_if_present
+                when :exclamation
+                  name = :rm_if_absent
+                when :semi_colon
+                  name = args[0]
+                  args = args[1..-1]
+                  next_instr = EAT_INSTR.(flow)[:instr]
+                end
+              else
+                name = args[0]
+                args = args[1..-1]
+              end
+              flow
+          })})
+
+        ok = !name.nil?
+        AstFlowResult.new(flow.tc, {
+          instr: ok ? InstrNode.new(
+            name,
+            args,
+            next_instr
+          ) : nil,
+          ok: ok
+        })
+      }
+    end
+
+    module Stat
+      include Magical::Ast::Instr
+
+      StatNode = Struct.new(
+        :code, 
+        :instr, 
+        :next_stat
+      )
+
+      EAT_STAT = -> tlc {
+        return nil unless peak = tlc.advance
+
+        code = peak[0].text
+
+        tc = peak[1..-1]
+        flow = AstFlowResult.new tc,{}
+        instr = EAT_INSTR.(flow)[:instr]
+
+        next_stat = EAT_STAT.(tlc)
+
+        StatNode.new(
+          code,
+          instr,
+          next_stat
+        )
+      }
+    end
+  end
+end
