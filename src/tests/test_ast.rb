@@ -72,21 +72,21 @@ class TestAST < Minitest::Test
     node = InstrNode.new
     make_flow('when x y')
       .pipe(MOD_SUB.(node))
-    assert_equal({ 'when' => ['x', 'y'] }, node.mods)
+    assert_equal({ when: ['x', 'y'] }, node.mods)
   end
 
   def test_mod_sub_multiple_modifiers
     node = InstrNode.new
     make_flow('when x : else z w')
       .pipe(MOD_SUB.(node))
-    assert_equal({ 'when' => ['x'], 'else' => ['z', 'w'] }, node.mods)
+    assert_equal({ when: ['x'], else: ['z', 'w'] }, node.mods)
   end
 
   def test_mod_sub_stops_at_newline
     node = InstrNode.new
     make_flow("when x\nelse y")
       .pipe(MOD_SUB.(node))
-    assert_equal({ 'when' => ['x'] }, node.mods)
+    assert_equal({ when: ['x'] }, node.mods)
   end
 
   # REST_PART_SUB

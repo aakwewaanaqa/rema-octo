@@ -74,6 +74,16 @@ module Shared
     end
   end
 
+  EAT_SPACES = -> flow {
+    ok = false
+    while peak = flow.tc.sneak_peek
+      break unless peak&.last == :spaces
+      flow.tc.advance
+      ok = true
+    end
+    AstFlowResult.new(flow.tc, { :last => 'EAT_SPACES', :ok => ok })
+  }
+
   EAT_NAME = -> flow {
     peak = flow.tc.sneak_peek
     name = ''

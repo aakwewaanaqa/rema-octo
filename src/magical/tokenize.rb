@@ -32,7 +32,7 @@ module Magical
         if comment && !comment.empty?
           sc = Shared::StringConsumer.new comment
           sc.readable_pos_offset = lc.readable_pos
-          tokens.concate tokenize.(sc)
+          tokens.concat tokenize.(sc)
         end
         tokens << Shared::Token.new(:new_line, "\n", lc.readable_pos)
       end

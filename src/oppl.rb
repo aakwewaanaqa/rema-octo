@@ -1,5 +1,8 @@
+require_relative "shared/readable_pos"
 require_relative "shared/string_consumer"
 require_relative "shared/token_consumer"
+require_relative "shared/token"
+require_relative "shared/ast"
 require_relative "shared/context"
 require_relative "shared/literal_resolver"
 require_relative "oppl/processor"

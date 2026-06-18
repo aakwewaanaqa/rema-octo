@@ -42,7 +42,7 @@ module Magical
         flow
           .subflow(-> flow { 
             flow
-            .pipe(NAME_SUB.(names))
+            .pipe(NAME_SUB.(args))
             .terminate_if(-> flow {
               args.empty?
             })
@@ -79,6 +79,7 @@ module Magical
     end
 
     module Stat
+      include Shared
       include Magical::Ast::Instr
 
       StatNode = Struct.new(
@@ -92,7 +93,7 @@ module Magical
 
         code = peak[0].text
 
-        tc = peak[1..-1]
+        tc = TokenConsumer.new(peak[1..-1])
         flow = AstFlowResult.new tc,{}
         instr = EAT_INSTR.(flow)[:instr]
 

@@ -13,11 +13,19 @@ do.test.tokenize:
 do.test.iterate:
 	make do.test 1=iterate
 
+do.test.magical.tokenize:
+	make do.test 1=magical_tokenize
+
+do.test.magical.ast:
+	make do.test 1=magical_ast
+
 do.test.all:
 	make do.test.ast
 	make do.test.parse
 	make do.test.tokenize
 	make do.test.iterate
+	make do.test.magical.tokenize
+	make do.test.magical.ast
 
 repl:
 	ruby bin/repl.rb

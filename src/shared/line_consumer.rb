@@ -3,7 +3,7 @@ module Shared
     attr_writer :readable_pos_offset
 
     def initialize str
-      @lines = /\R/.split str
+      @lines = str.split(/\R/)
       @index = -1
       @readable_pos_offset = ReadablePos.new
     end
