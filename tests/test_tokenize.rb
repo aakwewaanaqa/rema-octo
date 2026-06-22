@@ -59,4 +59,10 @@ class TestSplitByDelimiter < Minitest::Test
   def test_delimiter_at_end
     assert_equal ["foo", "bar"], split_the_text_by_delimiter("foo:bar:", ":")
   end
+
+  def test_tokenize_if_hashtag_in_literal
+    sc = ::Shared::StringConsumer.new "'#123'"
+    tokens = ::Oppl::Tokenize::TOKENIZE.(sc)
+    assert_equal tokens&.[](0)&.last, :literal
+  end
 end

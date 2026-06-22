@@ -24,3 +24,25 @@ exit
 cd docs/usage/examples
 read example_2.cs |> scope '//#' '//#'
 exit
+exit
+txt "!{pwd}"
+txt "!{git branch}"
+exit
+txt "`git branch`"
+txt "!{git branch}"
+exit
+text `123`
+text '123'
+txt '123'
+txt `123`
+txt `git branch`
+txt 'git branch'
+txt "git branch"
+exit
+cd docs/usage/examples
+read example_4.txt
+read example_4.txt
+     |> islands:start_with '#!'
+read example_4.txt |> islands:start_with '#!'
+read example_4.txt |> islands:start_with '#!' |> var
+exit

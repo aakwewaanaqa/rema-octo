@@ -60,15 +60,10 @@ module Shared
 
     def match_advance pattern
       return nil if done?
-      _rest = rest
-      match = pattern.match _rest
-      to_s = match.to_s
-      if _rest.start_with?(to_s)
-        to_s.length.times { advance }
-        return match
-      end
-
-      nil
+      match = pattern.match(rest)
+      return nil unless match&.pre_match&.empty?
+      match[0].length.times { advance }
+      match
     end
 
     # 前進一個字元，並更新 @literaling 狀態，回傳新位置的字元；超界回傳 nil

@@ -106,7 +106,9 @@ module Oppl
         .subflow(-> flow {
           flow
           .terminate_if(-> flow { flow.tc.sneak_peek&.last == :new_line })
-          .pipe(EAT_SPACES)
+          .pipe(EAT_SPACES) # dealing the first time coming into MOD_SUB
+          .pipe(EAT_COLON)  # dealing the first time coming into MOD_SUB
+          .pipe(EAT_SPACES) # dealing the first time coming into MOD_SUB
           .pipe(EAT_NAME)
           .terminate_if(-> flow { !flow.ok? })
           .on_ok(-> flow { mod_key = flow[:name].to_sym })

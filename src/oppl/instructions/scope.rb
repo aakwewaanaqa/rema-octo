@@ -7,10 +7,10 @@ module Oppl
 
       def self.call args, mods, val, ctx, &block
         sc = Shared::StringConsumer.new val
-        open = args[0]
-        is_open_pattern = open.start_with?('/') && open.end_with?('/')
-        close = args[1]
-        is_close_pattern = close.start_with?('/') && close.end_with?('/')
+        open = Instructions.to_pattern(args[0])
+        is_open_pattern = open.is_a?(Regexp)
+        close = Instructions.to_pattern(args[1])
+        is_close_pattern = close.is_a?(Regexp)
         result = ''
 
         until sc.done?

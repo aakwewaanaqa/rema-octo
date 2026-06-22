@@ -131,4 +131,11 @@ class TestAST < Minitest::Test
     assert_equal 'foo', result[:instr].name
     assert_equal 'bar', result[:instr].next_instr.name
   end
+
+  def test_full_eat_instr
+    result = make_flow("islands:start_with '#!'").pipe(EAT_INSTR.(false))
+    assert result.ok?
+    assert_equal 'islands', result[:instr].name
+    assert_equal "'#!'", result[:instr].mods[:start_with][0]
+  end
 end
