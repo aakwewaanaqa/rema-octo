@@ -52,6 +52,8 @@ module Shared
 
     def str_advance str
       return nil if done?
+      raise TypeError unless str.is_a?(String)
+
       return nil unless rest.start_with? str
 
       @index += str.length
@@ -60,6 +62,8 @@ module Shared
 
     def match_advance pattern
       return nil if done?
+      raise TypeError unless pattern.is_a?(Regexp)
+
       match = pattern.match(rest)
       return nil unless match&.pre_match&.empty?
       match[0].length.times { advance }

@@ -7,20 +7,47 @@ module Oppl
 
       def self.call args, mods, val, ctx, &block
         sc = Shared::StringConsumer.new val
-        open = Instructions.to_pattern(args[0])
-        is_open_pattern = open.is_a?(Regexp)
-        close = Instructions.to_pattern(args[1])
-        is_close_pattern = close.is_a?(Regexp)
+        open_r = Shared::Convert::TRY_AS_REGEXP.(args[0])
+        seek_open = -> {
+          if open_r.ok
+            pattern = open_r.val
+            return sc.match_advance pattern
+          else
+            str = open_r.val
+            return sc.str_advance str
+          end
+        }
+
+        close_r = Shared::Convert::TRY_AS_REGEXP.(args[1])
+        seek_close = -> {
+          if close_r.ok
+            pattern = close_r.val
+            return sc.match_advance pattern
+          else
+            str = close_r.val
+            return sc.str_advance str
+          end
+        }
+
         result = ''
 
+        keep_head = mods.key?(:keep_head)
+        keep_tail = mods.key?(:keep_tail)
+
         until sc.done?
-          break if is_open_pattern ? sc.match_advance(open) : sc.str_advance(open)
-          sc.advance
+          if peak = seek_open.call
+            result += peak.to_s if keep_head
+            break # breaks the loop of finding open
+          end
+          sc.advance # if it is not the open; advances more
         end
 
         until sc.done?
-          break if is_close_pattern ? sc.match_advance(close) : sc.str_advance(close)
-          result += sc.advance
+          if peak = seek_close.call
+            result += peak.to_s if keep_tail
+            break # breaks the loop of finding close
+          end
+          result += sc.advance # if it is not the close; takes more characters
         end
 
         result

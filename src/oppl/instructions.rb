@@ -1,7 +1,8 @@
 module Oppl
   module Instructions
     def self.to_pattern(s)
-      s =~ /\A\/(.*)\/(.*)\z/ ? Regexp.new($1) : s
+      r = Shared::Convert::TRY_AS_REGEXP.(s)
+      r.ok ? r.val : s
     end
   end
 end
