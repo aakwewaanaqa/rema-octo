@@ -58,7 +58,9 @@ Oppl 是 pipeline 語言。每一行是一條指令，用 `|>` 把輸出接到�
 | `cd path` | 切換工作目錄 |
 | `var name` | 把 `val` 存進 `ctx.vars[:name]`，同時回傳 `val` |
 | `txt "string"` | 回傳字串字面值（忽略 `val`） |
-| `scope open close` | 從 `val` 中擷取 `open`…`close` 之間的文字。支援 `/regex/` 格式 |
+| `scope open close` | 從 `val` 中擷取第一個 `open`…`close` 之間的文字。支援 `/regex/` 格式，`keep_head:` / `keep_tail:` 保留邊界 |
+| `scopes open close` | 與 `scope` 相同，但回傳**所有**配對的陣列（`Array<String>`）。支援相同 modifier |
+| `each { ... }` | 對 `val`（陣列）的每個元素執行 block，回傳結果陣列。block 內可用 pipe chain |
 | `line n` | 從 `val` 取出第 n 行（0-based） |
 | `exit` | 結束執行 |
 | `magical/macinterpret` | 把 `val`（字串）當作 Magical 模板執行，注入當前 ctx |
@@ -140,6 +142,33 @@ public class name_controllerController //~rp name_controller
 
 `//#` 本身不是 Magical 指令（`//~` 才是），它是純字串標記，
 供 Oppl 的 `scope "//#" "//#"` 指令用來截取模板中的重複單元（例如每個 method 的 block）。
+
+---
+
+## AST 位置追蹤（LSP 基礎）
+
+### Token 位置
+
+每個 `Token` 有 `readable_pos`（起始位置，1-based line/column）和 `end_pos`（結束位置，由 text 計算）：
+
+```ruby
+token.readable_pos  # => ReadablePos(line:1, col:1)
+token.end_pos       # => ReadablePos(line:1, col:3)  # for "foo"
+```
+
+### InstrNode 位置
+
+`InstrNode` 有 `start_pos`（name token 的起始位置），在 parse 時由 `ARG_SUB` 設定。
+
+### node_at(line, col)
+
+`InstrNode#node_at(line, col)` 根據 1-based 行列找出最接近的節點，遞迴走訪 `block_instr`、`pipe_instr`、`next_instr`：
+
+```ruby
+ast = EAT_INSTR.(false).(flow)[:instr]
+node = ast.node_at(1, 8)  # => 找到 col 8 的指令節點
+node.name                  # => "bar"（例如 "foo |> bar" 中）
+```
 
 ---
 

@@ -87,11 +87,10 @@ module Shared
   EAT_NAME = -> flow {
     peak = flow.tc.sneak_peek
     name = ''
+    name_pos = nil
     case peak&.last
-      when :literal
-        name = peak.text
-        flow.tc.advance
-      when :identifier
+      when :literal, :identifier
+        name_pos = peak.readable_pos
         name = peak.text
         flow.tc.advance
     end
@@ -99,6 +98,7 @@ module Shared
     AstFlowResult.new(flow.tc, {
       :last => 'EAT_NAME',
       :name => name,
+      :name_pos => name_pos,
       :ok => !name.empty?
     })
   }

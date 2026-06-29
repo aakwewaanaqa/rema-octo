@@ -138,4 +138,99 @@ class TestAST < Minitest::Test
     assert_equal 'islands', result[:instr].name
     assert_equal "'#!'", result[:instr].mods[:start_with][0]
   end
+
+  # start_pos
+
+  def test_instr_node_has_start_pos
+    result = make_flow('foo bar').pipe(EAT_INSTR.(false))
+    assert result.ok?
+    pos = result[:instr].start_pos
+    assert_equal 1, pos.line
+    assert_equal 1, pos.column
+  end
+
+  def test_instr_node_next_instr_has_correct_start_pos
+    result = make_flow("foo\nbar").pipe(EAT_INSTR.(false))
+    assert result.ok?
+    assert_equal 1, result[:instr].start_pos.line
+    assert_equal 2, result[:instr].next_instr.start_pos.line
+    assert_equal 1, result[:instr].next_instr.start_pos.column
+  end
+
+  def test_instr_node_pipe_instr_has_correct_start_pos
+    result = make_flow('foo |> bar').pipe(EAT_INSTR.(false))
+    assert result.ok?
+    assert_equal 1, result[:instr].start_pos.line
+    assert_equal 1, result[:instr].start_pos.column
+    assert_equal 1, result[:instr].pipe_instr.start_pos.line
+    assert_equal 8, result[:instr].pipe_instr.start_pos.column
+  end
+
+  # node_at
+
+  def test_node_at_finds_node_at_position
+    result = make_flow('foo').pipe(EAT_INSTR.(false))
+    assert_equal 'foo', result[:instr].node_at(1, 1)&.name
+    assert_equal 'foo', result[:instr].node_at(1, 3)&.name
+  end
+
+  def test_node_at_returns_nil_outside_range
+    result = make_flow('foo').pipe(EAT_INSTR.(false))
+    assert_nil result[:instr].node_at(1, 4)
+    assert_nil result[:instr].node_at(2, 1)
+  end
+
+  def test_node_at_traverses_next_instr
+    result = make_flow("foo\nbar").pipe(EAT_INSTR.(false))
+    assert_equal 'foo', result[:instr].node_at(1, 1)&.name
+    assert_equal 'bar', result[:instr].node_at(2, 1)&.name
+  end
+
+  def test_node_at_traverses_pipe_instr
+    result = make_flow('foo |> bar').pipe(EAT_INSTR.(false))
+    assert_equal 'foo', result[:instr].node_at(1, 1)&.name
+    assert_equal 'bar', result[:instr].node_at(1, 8)&.name
+  end
+
+  def test_node_at_traverses_block_instr
+    result = make_flow('foo { bar }').pipe(EAT_INSTR.(false))
+    assert_equal 'foo', result[:instr].node_at(1, 1)&.name
+    assert_equal 'bar', result[:instr].node_at(1, 7)&.name
+  end
+
+  # multiline pipe
+
+  def test_pipe_on_next_line_is_parsed_as_pipe_instr
+    result = make_flow("foo\n|> bar").pipe(EAT_INSTR.(false))
+    assert result.ok?
+    assert_equal 'foo', result[:instr].name
+    assert_equal 'bar', result[:instr].pipe_instr&.name
+    assert_nil result[:instr].next_instr
+  end
+
+  def test_pipe_on_next_line_with_indent
+    result = make_flow("foo\n   |> bar").pipe(EAT_INSTR.(false))
+    assert result.ok?
+    assert_equal 'bar', result[:instr].pipe_instr&.name
+  end
+
+  def test_chained_pipe_on_multiple_lines
+    result = make_flow("foo\n|> bar\n|> baz").pipe(EAT_INSTR.(false))
+    assert result.ok?
+    assert_equal 'bar', result[:instr].pipe_instr&.name
+    assert_equal 'baz', result[:instr].pipe_instr&.pipe_instr&.name
+  end
+
+  def test_multiline_pipe_then_next_instr
+    result = make_flow("foo\n|> bar\nnext").pipe(EAT_INSTR.(false))
+    assert result.ok?
+    assert_equal 'bar', result[:instr].pipe_instr&.name
+    assert_equal 'next', result[:instr].next_instr&.name
+  end
+
+  def test_node_at_multiline_pipe
+    result = make_flow("foo\n|> bar").pipe(EAT_INSTR.(false))
+    assert_equal 'foo', result[:instr].node_at(1, 1)&.name
+    assert_equal 'bar', result[:instr].node_at(2, 4)&.name
+  end
 end

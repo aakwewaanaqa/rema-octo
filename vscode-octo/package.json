@@ -1,0 +1,65 @@
+{
+  "name": "vscode-octo",
+  "displayName": "Octo Pipeline",
+  "description": "Syntax highlighting for Octo pipeline DSL (.oppl)",
+  "version": "0.0.1",
+  "publisher": "octo",
+  "main": "./extension.js",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "octo.runJob",
+        "title": "Octo: Run Job"
+      },
+      {
+        "command": "octo.runAnchor",
+        "title": "Octo: Scan Anchor"
+      }
+    ],
+    "languages": [
+      {
+        "id": "octo-pipeline",
+        "aliases": ["Octo Pipeline", "octo-pipeline", "oppl"],
+        "extensions": [".oppl"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "configuration": {
+      "title": "Octo",
+      "properties": {
+        "octo.executablePath": {
+          "type": "string",
+          "default": "octo",
+          "description": "Path to the octo executable."
+        }
+      }
+    },
+    "grammars": [
+      {
+        "language": "octo-pipeline",
+        "scopeName": "source.octo-pipeline",
+        "path": "./syntaxes/octo-pipeline.tmLanguage.json"
+      },
+      {
+        "scopeName": "markdown.oppl.codeblock",
+        "path": "./syntaxes/oppl.markdown-injection.tmLanguage.json",
+        "injectTo": ["text.html.markdown"],
+        "embeddedLanguages": {
+          "meta.embedded.block.oppl": "octo-pipeline"
+        }
+      }
+    ]
+  }
+}

@@ -73,7 +73,7 @@ module Oppl
       include Shared
 
       class InstrNode
-        attr_accessor :name, :args, :mods, :block_instr, :pipe_instr, :next_instr, :in_pipe
+        attr_accessor :name, :args, :mods, :block_instr, :pipe_instr, :next_instr, :in_pipe, :start_pos
 
         def initialize in_pipe = false
           @name = nil
@@ -83,6 +83,17 @@ module Oppl
           @pipe_instr = nil
           @next_instr = nil
           @in_pipe = in_pipe
+          @start_pos = nil
+        end
+
+        def node_at(line, col)
+          if @start_pos && @name
+            end_col = @start_pos.column + @name.length - 1
+            return self if @start_pos.line == line && col >= @start_pos.column && col <= end_col
+          end
+          block_instr&.node_at(line, col) ||
+          pipe_instr&.node_at(line, col) ||
+          next_instr&.node_at(line, col)
         end
       end
 
@@ -94,7 +105,10 @@ module Oppl
           .terminate_if(-> flow { flow[:line_crossed] })
           .pipe(EAT_NAME)
           .terminate_if(-> flow { !flow.ok? }, -> flow { flow.make_error 'Expected instruction name' })
-          .on_ok(-> flow { instr_node.name = flow[:name] })
+          .on_ok(-> flow {
+            instr_node.name = flow[:name]
+            instr_node.start_pos = flow[:name_pos]
+          })
           .pipe(NAME_SUB.(instr_node.args))
         })
       }.curry
@@ -122,28 +136,26 @@ module Oppl
       }.curry
 
       REST_PART_SUB = -> instr_node, flow {
-        eat_leading_space_again = false
-
         flow
         .pipe(EAT_SPACES)
         .subflow(-> flow {
           flow
           .pipe(EAT_OPEN_BRACE)
           .terminate_if(-> flow { !flow.ok? })
+          .pipe(EAT_LEADING_SPACE)
           .pipe(EAT_INSTR.(false))
           .on_ok(-> flow { instr_node.block_instr = flow[:instr] })
-          .pipe(EAT_SPACES)
+          .pipe(EAT_LEADING_SPACE)
           .pipe(EAT_CLOSE_BRACE)
-          .on_ok(-> flow { eat_leading_space_again = true })
         })
         .subflow(-> flow {
           flow
-          .pipe_if(-> flow { eat_leading_space_again }, EAT_LEADING_SPACE)
+          .terminate_if(-> flow { flow.tc.next_significant&.last != :pipe })
+          .pipe(EAT_LEADING_SPACE)
           .pipe(EAT_PIPE)
           .terminate_if(-> flow { !flow.ok? })
           .pipe(EAT_INSTR.(true))
           .on_ok(-> flow { instr_node.pipe_instr = flow[:instr] })
-          .on_ok(-> flow { eat_leading_space_again = true })
         })
         .subflow(-> flow {
           flow

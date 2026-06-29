@@ -11,5 +11,13 @@ module Shared
         ConvResult.new(Regexp.new($1, $2), true) : 
         ConvResult.new(s, false)
     }
+
+    TO_FLAT_STRING = -> obj {
+      case obj
+      when String then obj
+      when Array  then obj.flatten.join("\n")
+      else             obj.to_s
+      end
+    }
   end
 end

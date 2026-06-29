@@ -7,7 +7,7 @@ module Oppl
       def self.call args, mods, val, ctx, &block
         path = args[0]
         mode = (mods[:mode] || :replace).to_sym
-        _to_s = val.to_s
+        _to_s = Shared::Convert::TO_FLAT_STRING.(val)
         case mode
         when :replace
           IO.write path, _to_s

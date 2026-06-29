@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Octo Pipeline Markdown Injection",
+  "scopeName": "markdown.oppl.codeblock",
+  "injectionSelector": "L:text.html.markdown",
+  "patterns": [
+    { "include": "#oppl-code-block" }
+  ],
+  "repository": {
+    "oppl-code-block": {
+      "begin": "(?:^|\\G)(\\s*)(```+|~~~+)\\s*(oppl)\\s*$",
+      "end": "(?:^|\\G)(\\1)(\\2)\\s*$",
+      "beginCaptures": {
+        "3": { "name": "fenced_code.block.language.markdown" }
+      },
+      "patterns": [
+        {
+          "begin": "(?:^|\\G)(\\s*)",
+          "while": "(?:^|\\G)(?!\\s*```|\\s*~~~)",
+          "contentName": "meta.embedded.block.oppl",
+          "patterns": [
+            { "include": "source.octo-pipeline" }
+          ]
+        }
+      ]
+    }
+  }
+}
