@@ -40,13 +40,20 @@ function activate(context) {
 
     // ── LSP client — hover handled server-side ─────────────────────────────
     const lspBin = path.join(__dirname, '..', 'bin', 'oppl-lsp')
-    client = new LanguageClient(
-        'oppl-lsp',
-        'Oppl LSP',
-        { command: 'ruby', args: [lspBin], transport: TransportKind.stdio },
-        { documentSelector: [{ scheme: 'file', language: 'octo-pipeline' }], outputChannel: output }
-    )
-    client.start()
+    output.appendLine(`LSP bin: ${lspBin}`)
+    output.appendLine(`ruby: /Users/ponito/.rbenv/shims/ruby`)
+    try {
+        client = new LanguageClient(
+            'oppl-lsp',
+            'Oppl LSP',
+            { command: '/Users/ponito/.rbenv/shims/ruby', args: [lspBin] },
+            { documentSelector: [{ scheme: 'file', language: 'octo-pipeline' }], outputChannel: output }
+        )
+        output.appendLine('LanguageClient created')
+        client.start().then(() => output.appendLine('LSP started')).catch(e => output.appendLine(`LSP start error: ${e.message}`))
+    } catch (e) {
+        output.appendLine(`LSP init error: ${e.message}`)
+    }
 
     // ── Completion for .oppl ───────────────────────────────────────────────
     const completionProvider = vscode.languages.registerCompletionItemProvider(

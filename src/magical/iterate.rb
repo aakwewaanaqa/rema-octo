@@ -5,7 +5,7 @@ module Magical
     def dispatch(instr, code, ctx)
       klass_name = instr.name.to_s.split('_').map(&:capitalize).join
       klass = Magical::Instructions.const_get(klass_name)
-      result = klass.call(code, instr.args, ctx)
+      result = klass.call(code, instr.args.map(&:text), ctx)
       return result if result == :stop || result.nil?
       return dispatch(instr.next_instr, result, ctx) if instr.next_instr
       result

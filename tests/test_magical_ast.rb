@@ -68,7 +68,7 @@ class TestMagicalAstEatInstr < Minitest::Test
     ))
     assert result[:ok]
     assert_equal "foo", result[:instr].name
-    assert_equal ["bar"], result[:instr].args
+    assert_equal ["bar"], result[:instr].args.map(&:text)
   end
 
   def test_question_mark_sets_next_if_present
@@ -78,7 +78,7 @@ class TestMagicalAstEatInstr < Minitest::Test
     ))
     assert result[:ok]
     assert_equal :next_if_present, result[:instr].name
-    assert_equal ["foo"], result[:instr].args
+    assert_equal ["foo"], result[:instr].args.map(&:text)
   end
 
   def test_exclamation_sets_rm_if_absent
@@ -88,7 +88,7 @@ class TestMagicalAstEatInstr < Minitest::Test
     ))
     assert result[:ok]
     assert_equal :rm_if_absent, result[:instr].name
-    assert_equal ["foo"], result[:instr].args
+    assert_equal ["foo"], result[:instr].args.map(&:text)
   end
 
   def test_semicolon_chains_next_instr
@@ -133,19 +133,19 @@ class TestMagicalAstEatStat < Minitest::Test
   def test_bare_instr_name_and_args
     stat = EAT_STAT.(make_tlc("x = 1 #~ foo bar baz"))
     assert_equal "foo", stat.instr.name
-    assert_equal ["bar", "baz"], stat.instr.args
+    assert_equal ["bar", "baz"], stat.instr.args.map(&:text)
   end
 
   def test_question_mark_instr
     stat = EAT_STAT.(make_tlc("x #~ foo?"))
     assert_equal :next_if_present, stat.instr.name
-    assert_equal ["foo"], stat.instr.args
+    assert_equal ["foo"], stat.instr.args.map(&:text)
   end
 
   def test_exclamation_instr
     stat = EAT_STAT.(make_tlc("x #~ foo!"))
     assert_equal :rm_if_absent, stat.instr.name
-    assert_equal ["foo"], stat.instr.args
+    assert_equal ["foo"], stat.instr.args.map(&:text)
   end
 
   def test_next_stat_on_second_line

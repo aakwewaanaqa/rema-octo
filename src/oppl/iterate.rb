@@ -6,8 +6,8 @@ module Oppl
 
     def dispatch(node, pipe_val, ctx = Shared::Context.new)
       klass = Instructions.const_get(node.name.capitalize)
-      args = node.args.map { |v| resolve_val(v, ctx.vars) }
-      mods = node.mods.transform_values { |vals| vals.map { |v| resolve_val(v, ctx.vars) } }
+      args = node.args.map { |v| resolve_val(v.text, ctx.vars) }
+      mods = node.mods.transform_values { |vals| vals.map { |v| resolve_val(v.text, ctx.vars) } }
       block_fn = node.block_instr ? -> (child_ctx, v = nil) { iterate(node.block_instr, v, child_ctx) } : nil
       wrapped = block_fn ? proc { |v = nil| block_fn.(ctx.child, v) } : nil
       { ok: true, result: klass.(args, mods, pipe_val, ctx, &wrapped) }

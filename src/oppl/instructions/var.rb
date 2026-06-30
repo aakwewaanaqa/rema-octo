@@ -10,6 +10,15 @@ module Oppl
 # if args[0] is missing but val is provided meaning we want to parse the .env like to set variables      
       "
 
+      def self.lsp_tokens(node)
+        tokens = [{ pos: node.start_pos, length: node.name.length, type: :keyword }]
+        arg0 = node.args[0]
+        if arg0
+          tokens << { pos: arg0.readable_pos, length: arg0.text.length, type: :variable }
+        end
+        tokens
+      end
+
       def self.check args, mods, val, ctx, &block
         has_arg0 = args&.[](0) ? true : false
         has_val = val ? true : false

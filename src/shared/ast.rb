@@ -99,6 +99,7 @@ module Shared
       :last => 'EAT_NAME',
       :name => name,
       :name_pos => name_pos,
+      :name_token => peak,
       :ok => !name.empty?
     })
   }
@@ -111,7 +112,7 @@ module Shared
       .terminate_if(-> flow { !flow.ok? })
       .pipe(EAT_NAME)
       .terminate_if(-> flow { !flow.ok? })
-      .on_ok(-> flow { array_to_push << flow[:name] })
+      .on_ok(-> flow { array_to_push << flow[:name_token] })
       .pipe(NAME_SUB.(array_to_push)) # Recursive Again
     })
   }.curry

@@ -45,7 +45,7 @@ module Magical
         flow
           .subflow(-> flow {
             flow
-            .pipe(-> f { EAT_SPACES.(f); EAT_NAME.(f).tap { |r| args << r[:name] if r[:ok] }; f })
+            .pipe(-> f { EAT_SPACES.(f); EAT_NAME.(f).tap { |r| args << r[:name_token] if r[:ok] }; f })
             .terminate_if(-> flow { args.empty? })
             .pipe(NAME_SUB.(args))
             .pipe(EAT_SEPERATOR)
@@ -59,12 +59,12 @@ module Magical
                   name = :rm_if_absent
                   next_instr = EAT_INSTR.(flow)[:instr]
                 when :semi_colon
-                  name = args[0]
+                  name = args[0].text
                   args = args[1..-1]
                   next_instr = EAT_INSTR.(flow)[:instr]
                 end
               else
-                name = args[0]
+                name = args[0].text
                 args = args[1..-1]
               end
               flow

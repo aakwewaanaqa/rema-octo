@@ -14,7 +14,14 @@ module Lsp
         respond(id, {
           capabilities: {
             textDocumentSync: 1,
-            hoverProvider: true
+            hoverProvider: true,
+            semanticTokensProvider: {
+              legend: {
+                tokenTypes: ["keyword", "string", "variable", "regexp"],
+                tokenModifiers: []
+              },
+              full: true
+            }
           }
         })
 
@@ -51,6 +58,10 @@ module Lsp
         else
           respond(id, nil)
         end
+
+      when "textDocument/semanticTokens/full"
+        uri = params.dig("textDocument", "uri")
+        respond(id, { data: @store.semantic_tokens(uri) })
 
       when "shutdown"
         respond(id, nil)

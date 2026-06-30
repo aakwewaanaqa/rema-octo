@@ -21,7 +21,7 @@ class TestAST < Minitest::Test
     make_flow('a b c d')
       .pipe(EAT_NAME)
       .pipe(NAME_SUB.(names))
-    assert_equal ['b', 'c', 'd'], names
+    assert_equal ['b', 'c', 'd'], names.map(&:text)
   end
 
   def test_name_sub_stops_at_newline
@@ -29,7 +29,7 @@ class TestAST < Minitest::Test
     make_flow("a b\nc")
       .pipe(EAT_NAME)
       .pipe(NAME_SUB.(names))
-    assert_equal ['b'], names
+    assert_equal ['b'], names.map(&:text)
   end
 
   def test_name_sub_empty_when_no_more_names
@@ -47,7 +47,7 @@ class TestAST < Minitest::Test
     make_flow('foo a b c')
       .pipe(ARG_SUB.(node))
     assert_equal 'foo', node.name
-    assert_equal ['a', 'b', 'c'], node.args
+    assert_equal ['a', 'b', 'c'], node.args.map(&:text)
   end
 
   def test_arg_sub_no_args
@@ -63,7 +63,7 @@ class TestAST < Minitest::Test
     make_flow("foo a\nb")
       .pipe(ARG_SUB.(node))
     assert_equal 'foo', node.name
-    assert_equal ['a'], node.args
+    assert_equal ['a'], node.args.map(&:text)
   end
 
   # MOD_SUB
@@ -72,21 +72,21 @@ class TestAST < Minitest::Test
     node = InstrNode.new
     make_flow('when x y')
       .pipe(MOD_SUB.(node))
-    assert_equal({ when: ['x', 'y'] }, node.mods)
+    assert_equal({ when: ['x', 'y'] }, node.mods.transform_values { |v| v.map(&:text) })
   end
 
   def test_mod_sub_multiple_modifiers
     node = InstrNode.new
     make_flow('when x : else z w')
       .pipe(MOD_SUB.(node))
-    assert_equal({ when: ['x'], else: ['z', 'w'] }, node.mods)
+    assert_equal({ when: ['x'], else: ['z', 'w'] }, node.mods.transform_values { |v| v.map(&:text) })
   end
 
   def test_mod_sub_stops_at_newline
     node = InstrNode.new
     make_flow("when x\nelse y")
       .pipe(MOD_SUB.(node))
-    assert_equal({ when: ['x'] }, node.mods)
+    assert_equal({ when: ['x'] }, node.mods.transform_values { |v| v.map(&:text) })
   end
 
   # REST_PART_SUB
@@ -136,7 +136,7 @@ class TestAST < Minitest::Test
     result = make_flow("islands:start_with '#!'").pipe(EAT_INSTR.(false))
     assert result.ok?
     assert_equal 'islands', result[:instr].name
-    assert_equal "'#!'", result[:instr].mods[:start_with][0]
+    assert_equal "'#!'", result[:instr].mods[:start_with][0].text
   end
 
   # start_pos
