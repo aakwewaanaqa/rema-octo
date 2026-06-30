@@ -1,4 +1,5 @@
 .DS_STORE_
+.DS_STORE
 .tmp
 *.tmp
 tmp*
