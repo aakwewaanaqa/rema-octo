@@ -1,10 +1,10 @@
 module Oppl
   module Iterate
     def resolve_val(v, vars)
-      Shared::LiteralResolver.new(v).resolve(vars)
+      ::Shared::LiteralResolver.new(v).resolve(vars)
     end
 
-    def dispatch(node, pipe_val, ctx = Shared::Context.new)
+    def dispatch(node, pipe_val, ctx = ::Shared::Context.new)
       klass = Instructions.const_get(node.name.capitalize)
       args = node.args.map { |v| resolve_val(v.text, ctx.vars) }
       mods = node.mods.transform_values { |vals| vals.map { |v| resolve_val(v.text, ctx.vars) } }
@@ -15,7 +15,7 @@ module Oppl
       { ok: false, error: { code: "UNKNOWN_INSTRUCTION", message: "Unknown instruction: #{node.name}" } }
     end
 
-    def iterate(node, pipe_val = nil, ctx = Shared::Context.new)
+    def iterate(node, pipe_val = nil, ctx = ::Shared::Context.new)
       result = dispatch(node, pipe_val, ctx)
       return result unless result[:ok]
       result = iterate(node.pipe_instr, result[:result], ctx) if node.pipe_instr

@@ -17,18 +17,18 @@ const yamlKeyHints = {
 }
 
 const completionInstructions = [
-    { label: 'read',         snippet: "read '${1:path}'",                doc: 'Read a file, returns its content' },
-    { label: 'write',        snippet: "write '${1:path}'",               doc: 'Write val to a file' },
-    { label: 'find',         snippet: "find '${1:regex}'",               doc: 'Find files matching regex' },
-    { label: 'ls',           snippet: 'ls',                              doc: 'List current directory' },
-    { label: 'cd',           snippet: "cd '${1:path}'",                  doc: 'Change working directory' },
-    { label: 'var',          snippet: 'var ${1:name}',                   doc: 'Store val into ctx.vars' },
-    { label: 'txt',          snippet: "txt '${1:string}'",               doc: 'Return a string literal' },
-    { label: 'scope',        snippet: "scope '${1:open}' '${2:close}'",  doc: 'Extract text between delimiters' },
-    { label: 'line',         snippet: 'line ${1:0}',                     doc: 'Get nth line from val' },
-    { label: 'magical',      snippet: 'magical',                         doc: 'Run val as Magical template' },
-    { label: 'macinterpret', snippet: 'macinterpret',                    doc: 'Alias for magical' },
-    { label: 'exit',         snippet: 'exit',                            doc: 'Stop execution' },
+    { label: 'read', snippet: "read '${1:path}'", doc: 'Read a file, returns its content' },
+    { label: 'write', snippet: "write '${1:path}'", doc: 'Write val to a file' },
+    { label: 'find', snippet: "find '${1:regex}'", doc: 'Find files matching regex' },
+    { label: 'ls', snippet: 'ls', doc: 'List current directory' },
+    { label: 'cd', snippet: "cd '${1:path}'", doc: 'Change working directory' },
+    { label: 'var', snippet: 'var ${1:name}', doc: 'Store val into ctx.vars' },
+    { label: 'txt', snippet: "txt '${1:string}'", doc: 'Return a string literal' },
+    { label: 'scope', snippet: "scope '${1:open}' '${2:close}'", doc: 'Extract text between delimiters' },
+    { label: 'line', snippet: 'line ${1:0}', doc: 'Get nth line from val' },
+    { label: 'magical', snippet: 'magical', doc: 'Run val as Magical template' },
+    { label: 'macinterpret', snippet: 'macinterpret', doc: 'Alias for magical' },
+    { label: 'exit', snippet: 'exit', doc: 'Stop execution' },
 ]
 
 // ── Activate ───────────────────────────────────────────────────────────────
@@ -122,7 +122,7 @@ function activate(context) {
                     const jobMatch = text.match(/^jobs\s+(.+?)\s*:/)
                     if (jobMatch) {
                         const range = new vscode.Range(i, 0, i, text.length)
-                        lenses.push(new vscode.CodeLens(range, { title: '▶ Run Job',  command: 'octo.runJob', arguments: [jobMatch[1], document.fileName, false] }))
+                        lenses.push(new vscode.CodeLens(range, { title: '▶ Run Job', command: 'octo.runJob', arguments: [jobMatch[1], document.fileName, false] }))
                         lenses.push(new vscode.CodeLens(range, { title: '👁 Preview', command: 'octo.runJob', arguments: [jobMatch[1], document.fileName, true] }))
                     }
                     const anchorMatch = text.match(/^anchors\s+(.+?)\s*:/)
