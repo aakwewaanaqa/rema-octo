@@ -1,11 +1,11 @@
 {
   "editor.semanticTokenColorCustomizations": {
-    "[Spinel Dark]": {
-      "rules": {
-        "keyword": "#dd5555",
-        "variable": "#D1CCF1",
-        "regexp": "#e6c07b"
-      }
+    "rules": {
+      "keyword": "#dd5555",
+      "function": "#61afef",
+      "variable": "#D1CCF1",
+      "regexp": "#e6c07b",
+      "number": "#d19a66"
     }
   }
 }

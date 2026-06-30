@@ -3,18 +3,45 @@
   "name": "Octo Pipeline",
   "scopeName": "source.octo-pipeline",
   "patterns": [
-    { "include": "#comment" },
-    { "include": "#loop-block" },
-    { "include": "#regex-instruction" },
-    { "include": "#nav-instruction" },
-    { "include": "#scope-instruction" },
-    { "include": "#until-instruction" },
-    { "include": "#pipe-operator" },
-    { "include": "#modifier" },
-    { "include": "#var-instruction" },
-    { "include": "#instruction" },
-    { "include": "#string" },
-    { "include": "#boolean" }
+    {
+      "include": "#double-string"
+    },
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#loop-block"
+    },
+    {
+      "include": "#nav-instruction"
+    },
+    {
+      "include": "#scope-instruction"
+    },
+    {
+      "include": "#until-instruction"
+    },
+    {
+      "include": "#pipe-operator"
+    },
+    {
+      "include": "#modifier"
+    },
+    {
+      "include": "#var-instruction"
+    },
+    {
+      "include": "#instruction"
+    },
+    {
+      "include": "#regexp-literal"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#boolean"
+    }
   ],
   "repository": {
     "comment": {
@@ -25,75 +52,105 @@
       "name": "meta.block.loop.octo-pipeline",
       "begin": "(loop)\\s*(\\{)",
       "beginCaptures": {
-        "1": { "name": "keyword.control.loop.octo-pipeline" },
-        "2": { "name": "punctuation.section.block.begin.octo-pipeline" }
+        "1": {
+          "name": "keyword.control.loop.octo-pipeline"
+        },
+        "2": {
+          "name": "punctuation.section.block.begin.octo-pipeline"
+        }
       },
       "end": "\\}",
       "endCaptures": {
-        "0": { "name": "punctuation.section.block.end.octo-pipeline" }
+        "0": {
+          "name": "punctuation.section.block.end.octo-pipeline"
+        }
       },
       "patterns": [
-        { "include": "#loop-block" },
-        { "include": "#regex-instruction" },
-        { "include": "#nav-instruction" },
-        { "include": "#scope-instruction" },
-        { "include": "#until-instruction" },
-        { "include": "#pipe-operator" },
-        { "include": "#modifier" },
-        { "include": "#var-instruction" },
-        { "include": "#instruction" },
-        { "include": "#string" },
-        { "include": "#boolean" }
+        {
+          "include": "#loop-block"
+        },
+        {
+          "include": "#nav-instruction"
+        },
+        {
+          "include": "#scope-instruction"
+        },
+        {
+          "include": "#until-instruction"
+        },
+        {
+          "include": "#pipe-operator"
+        },
+        {
+          "include": "#modifier"
+        },
+        {
+          "include": "#var-instruction"
+        },
+        {
+          "include": "#instruction"
+        },
+        {
+          "include": "#regexp-literal"
+        },
+        {
+          "include": "#double-string"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#boolean"
+        }
       ]
     },
     "scope-instruction": {
       "match": "\\b(scope)\\b\\s+('[^']*'|[^\\s:'|]+)\\s+('[^']*'|[^\\s:'|]+)",
       "captures": {
-        "1": { "name": "entity.name.function.octo-pipeline" },
-        "2": { "name": "string.unquoted.bracket.octo-pipeline" },
-        "3": { "name": "string.unquoted.bracket.octo-pipeline" }
+        "1": {
+          "name": "entity.name.function.octo-pipeline"
+        },
+        "2": {
+          "name": "string.unquoted.bracket.octo-pipeline"
+        },
+        "3": {
+          "name": "string.unquoted.bracket.octo-pipeline"
+        }
       }
     },
     "until-instruction": {
       "match": "\\b(until)\\b\\s+('[^']*'|[^\\s:'|]+)",
       "captures": {
-        "1": { "name": "entity.name.function.octo-pipeline" },
-        "2": { "name": "string.unquoted.delimiter.octo-pipeline" }
+        "1": {
+          "name": "entity.name.function.octo-pipeline"
+        },
+        "2": {
+          "name": "string.unquoted.delimiter.octo-pipeline"
+        }
       }
     },
     "pipe-operator": {
       "match": "\\|>",
       "name": "keyword.operator.pipe.octo-pipeline"
     },
-    "regex-instruction": {
-      "name": "meta.instruction.regex.octo-pipeline",
-      "begin": "\\b(regex)\\b((:)(keep))?\\s+(')",
-      "beginCaptures": {
-        "1": { "name": "entity.name.function.octo-pipeline" },
-        "3": { "name": "punctuation.separator.modifier.octo-pipeline" },
-        "4": { "name": "storage.modifier.octo-pipeline" },
-        "5": { "name": "punctuation.definition.string.begin.octo-pipeline" }
-      },
-      "end": "'",
-      "endCaptures": {
-        "0": { "name": "punctuation.definition.string.end.octo-pipeline" }
-      },
-      "patterns": [
-        { "include": "source.js.regexp" }
-      ]
-    },
     "var-instruction": {
       "match": "\\b(var)\\b\\s+('([^']*)')",
       "captures": {
-        "1": { "name": "entity.name.function.octo-pipeline" },
-        "2": { "name": "entity.name.variable.octo-pipeline" }
+        "1": {
+          "name": "entity.name.function.octo-pipeline"
+        },
+        "2": {
+          "name": "entity.name.variable.octo-pipeline"
+        }
       }
     },
     "nav-instruction": {
       "name": "meta.instruction.nav.octo-pipeline",
       "begin": "\\$",
       "beginCaptures": {
-        "0": { "name": "keyword.operator.navigation.octo-pipeline" }
+        "0": {
+          "name": "keyword.operator.navigation.octo-pipeline"
+        }
       },
       "end": "(?=\\s|\\|>|\\}|$)",
       "patterns": [
@@ -118,13 +175,75 @@
     "modifier": {
       "match": "(:)([A-Za-z0-9_-]+)",
       "captures": {
-        "1": { "name": "punctuation.separator.modifier.octo-pipeline" },
-        "2": { "name": "storage.modifier.octo-pipeline" }
+        "1": {
+          "name": "punctuation.separator.modifier.octo-pipeline"
+        },
+        "2": {
+          "name": "storage.modifier.octo-pipeline"
+        }
       }
     },
     "instruction": {
       "match": "\\b(scope|eat|word|space|line|var|regex|until)\\b",
       "name": "entity.name.function.octo-pipeline"
+    },
+    "regexp-literal": {
+      "begin": "('|\")(/)(?=[^'\"]*\\/('|\"))",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.string.begin.octo-pipeline"
+        },
+        "2": {
+          "name": "punctuation.definition.string.regexp.octo-pipeline"
+        }
+      },
+      "end": "(/)(\\1)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.string.regexp.octo-pipeline"
+        },
+        "2": {
+          "name": "punctuation.definition.string.end.octo-pipeline"
+        }
+      },
+      "patterns": [
+        {
+          "include": "source.js.regexp"
+        }
+      ]
+    },
+    "double-string": {
+      "name": "string.quoted.double.octo-pipeline",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.octo-pipeline" }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.octo-pipeline" }
+      },
+      "patterns": [
+        {
+          "name": "meta.embedded.interpolation.octo-pipeline",
+          "begin": "#\\{",
+          "beginCaptures": {
+            "0": { "name": "punctuation.section.interpolation.begin.octo-pipeline" }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.interpolation.end.octo-pipeline" }
+          },
+          "patterns": [
+            { "include": "#instruction" },
+            { "include": "#var-instruction" },
+            { "include": "#modifier" }
+          ]
+        },
+        {
+          "match": "\\\\.",
+          "name": "constant.character.escape.octo-pipeline"
+        }
+      ]
     },
     "string": {
       "name": "string.quoted.single.octo-pipeline",

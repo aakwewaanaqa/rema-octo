@@ -17,7 +17,7 @@ module Lsp
       @docs[uri]&.node_at(line, col)
     end
 
-    TOKEN_TYPES = { keyword: 0, string: 1, variable: 2, regexp: 3 }
+    TOKEN_TYPES = { keyword: 0, string: 1, variable: 2, regexp: 3, function: 4, number: 5 }
 
     def semantic_tokens(uri)
       root = @docs[uri]

@@ -17,7 +17,7 @@ module Lsp
             hoverProvider: true,
             semanticTokensProvider: {
               legend: {
-                tokenTypes: ["keyword", "string", "variable", "regexp"],
+                tokenTypes: ["keyword", "string", "variable", "regexp", "function", "number"],
                 tokenModifiers: []
               },
               full: true

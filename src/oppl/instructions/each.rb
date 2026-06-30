@@ -1,6 +1,14 @@
 module Oppl
   module Instructions
     class Each
+      def self.lsp_tokens node
+        [{
+          pos: node.start_pos,
+          length: node.name.length,
+          type: :keyword
+        }]
+      end
+
       def self.check args, mods, val, ctx, &block
       end
 
