@@ -7,7 +7,7 @@ module Magical
       end
       def self.call code, args, ctx
         args.each { |name|
-          code = code.sub(name, ctx.vars[name.to_sym])
+          code = code.sub(name, ctx.vars[name.to_sym] || '')
         }
         code
       end

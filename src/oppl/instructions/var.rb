@@ -10,9 +10,9 @@ module Oppl
 
       def self.lsp_tokens(node)
         tokens = [{ pos: node.start_pos, length: node.name.length, type: :keyword }]
-        arg0 = node.args[0]
-        if arg0
-          tokens << { pos: arg0.readable_pos, length: arg0.text.length, type: :variable }
+        var_name = node.args[0]
+        if var_name
+          tokens << { pos: var_name.readable_pos, length: var_name.text.length, type: :variable }
         end
         tokens
       end
@@ -27,13 +27,33 @@ module Oppl
         v.split(',').map(&:strip)
       end
 
+      
       def self.call args, mods, val, ctx, &block
-        arg0 = args&.[](0)&.to_sym
         if val
-          ctx.vars[arg0] = auto_val(val)
-          return ctx.vars[arg0]
+          array_splitter = mods&.[](:array)
+          flat = mods&.key?(:flat)
+
+          _DO_VAL = -> {
+            val = ::Shared::Convert::TO_FLAT_STRING.(val) if flat
+            val = val.split(array_splitter).map(&:strip) if array_splitter
+          }
+
+          _SET_VAR = -> {
+            var_name = args[0]&.to_sym if args
+            ctx[var_name] = val if ctx && var_name
+          }
+
+          _DO_VAL.()
+          _SET_VAR.()
+          return val
         else
-          return ctx.vars[arg0]
+          _GET_VAR = -> {
+            var_name = args[0]&.to_sym if args
+            return ctx[var_name] if ctx && var_name
+            return nil
+          }
+
+          return _GET_VAR.()
         end
       end
     end

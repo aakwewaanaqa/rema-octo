@@ -1,0 +1,9 @@
+txt "UserProfile" |> var name_controller
+txt "UserDto" |> var type_return
+txt "GetUserProfile" |> var str_endpoint
+txt "GetUserProfileDto" |> var type_dto
+txt "GET" |> var str_method
+
+read src.cs
+|> macinterpret : compat '/\/\/~/'
+|> write ".out.cs"

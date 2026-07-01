@@ -7,7 +7,8 @@ module Oppl
           
         end
         def self.call args, mods, val, ctx, &block
-          tokens = ::Magical::Tokenize::TOKENIZE.(val)
+          compat = ::Shared::Convert::TRY_AS_REGEXP.(mods&.[](:compat)&.[](0))&.val || /#~|\/{2}~/
+          tokens = ::Magical::Tokenize::TOKENIZE.(val, compat)
           tlc = ::Shared::TokenizedLineConsumer.new tokens
           stat = ::Magical::Ast::Stat::EAT_STAT.(tlc)
           ::Magical::Iterate::iterate stat, ctx

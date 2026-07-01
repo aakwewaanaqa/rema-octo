@@ -1,6 +1,7 @@
 module Magical
   module Tokenize
-    TOKENIZE = -> (txt, comment_start_pattern = /#~|\/{2}~/) {
+    # compat stands for comment_start_pattern
+    TOKENIZE = -> (txt, compat = /#~|\/{2}~/) {
       tokenize = -> sc {
         tokens = []
         while sc.done? == false
@@ -26,7 +27,7 @@ module Magical
       lc = Shared::LineConsumer.new txt
       tokens = []
       while peak = lc.advance
-        code, comment = peak.split comment_start_pattern
+        code, comment = peak.split compat
         code_token = Shared::Token.new(:code, code, lc.readable_pos)
         tokens << code_token
         if comment && !comment.empty?

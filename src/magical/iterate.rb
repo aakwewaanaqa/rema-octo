@@ -23,7 +23,7 @@ module Magical
         code = result
       end
 
-      code + iterate(stat.next_stat, ctx)
+      code.rstrip + "\n" + iterate(stat.next_stat, ctx)
     end
   end
 end

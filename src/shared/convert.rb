@@ -7,6 +7,7 @@ module Shared
     # tries to turn s into Regexp
     # if fails it will be a string
     TRY_AS_REGEXP = -> s {
+      return nil unless s
       s =~ /\A\/(.*)\/(.*)\z/ ? 
         ConvResult.new(Regexp.new($1, $2), true) : 
         ConvResult.new(s, false)

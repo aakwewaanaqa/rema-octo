@@ -34,5 +34,10 @@ do.test.all:
 	make do.test.magical.ast
 	make do.test.magical.iterate
 
+do.clean:
+	find . -type f -name '*.out.*' | while read -r o; do \
+		rm "$$o"; \
+	done
+
 repl:
 	ruby bin/repl.rb

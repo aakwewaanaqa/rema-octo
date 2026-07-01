@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "test example 3",
+            "type": "shell",
+            "args": [
+                "do.test.example",
+                "1=3"
+            ],
+            "command": "make",
+        },
+        {
+            "label": "test example 4",
+            "type": "shell",
+            "args": [
+                "do.test.example",
+                "1=4"
+            ],
+            "command": "make",
+        }
+    ]
+}

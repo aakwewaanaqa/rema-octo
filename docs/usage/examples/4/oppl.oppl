@@ -15,5 +15,5 @@ var doc
 
      var islands
      |> ns 1..-2
-     |> write "#{name}.txt"
+     |> write "#{name}.out.txt"
 }
