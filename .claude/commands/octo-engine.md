@@ -51,12 +51,12 @@ Oppl 是 pipeline 語言。每一行是一條指令，用 `|>` 把輸出接到�
 
 | 指令 | 作用 |
 |---|---|
-| `read path` | 讀取檔案，回傳檔案內容字串。可帶 block，block 內可用 `val` |
-| `write path` | 把 `val` 寫入 `path`。`mode:` mod 可為 `replace`（預設）或 `append` |
+| `read path` | 讀取檔案，回傳檔案內容字串。路徑以 `ctx[:__DIR__]`（即 `.oppl` 所在目錄）為基底 |
+| `write path` | 把 `val` 寫入 `path`（相對於 `ctx[:__DIR__]`）。`mode:` 可為 `replace`（預設）或 `append` |
 | `find regex` | 在當前目錄找符合 regex 的檔名，回傳陣列 |
 | `ls` | 列出當前目錄，回傳陣列 |
 | `cd path` | 切換工作目錄 |
-| `var name` | 把 `val` 存進 `ctx.vars[:name]`，同時回傳 `val`；無 val 時回傳 `ctx.vars[:name]` |
+| `var name` | 把 `val` 存進 `ctx[:name]`，同時回傳 `val`；無 val 時回傳 `ctx[:name]`。`flat:` 把 val 攤平為單一字串；`array: sep` 用 sep 切割成陣列 |
 | `vars` | 把 `val`（.env 格式字串）解析後批次寫入 `ctx.vars`，回傳整個 `ctx.vars` |
 | `txt "string"` | 回傳字串字面值（忽略 `val`） |
 | `scope open close` | 從 `val` 中擷取第一個 `open`…`close` 之間的文字。支援 `/regex/` 格式，`keep_head:` / `keep_tail:` 保留邊界 |
@@ -64,7 +64,7 @@ Oppl 是 pipeline 語言。每一行是一條指令，用 `|>` 把輸出接到�
 | `each { ... }` | 對 `val`（陣列）的每個元素執行 block，回傳結果陣列。block 內可用 pipe chain |
 | `line n` | 從 `val` 取出第 n 行（0-based） |
 | `exit` | 結束執行 |
-| `magical/macinterpret` | 把 `val`（字串）當作 Magical 模板執行，注入當前 ctx |
+| `macinterpret` | 把 `val`（字串）當作 Magical 模板執行，注入當前 ctx。`compat: '/regex/'` 可自訂觸發符（預設 `#~` 或 `//~`） |
 
 ### 範例
 
