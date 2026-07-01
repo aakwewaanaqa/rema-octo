@@ -56,7 +56,8 @@ Oppl 是 pipeline 語言。每一行是一條指令，用 `|>` 把輸出接到�
 | `find regex` | 在當前目錄找符合 regex 的檔名，回傳陣列 |
 | `ls` | 列出當前目錄，回傳陣列 |
 | `cd path` | 切換工作目錄 |
-| `var name` | 把 `val` 存進 `ctx.vars[:name]`，同時回傳 `val` |
+| `var name` | 把 `val` 存進 `ctx.vars[:name]`，同時回傳 `val`；無 val 時回傳 `ctx.vars[:name]` |
+| `vars` | 把 `val`（.env 格式字串）解析後批次寫入 `ctx.vars`，回傳整個 `ctx.vars` |
 | `txt "string"` | 回傳字串字面值（忽略 `val`） |
 | `scope open close` | 從 `val` 中擷取第一個 `open`…`close` 之間的文字。支援 `/regex/` 格式，`keep_head:` / `keep_tail:` 保留邊界 |
 | `scopes open close` | 與 `scope` 相同，但回傳**所有**配對的陣列（`Array<String>`）。支援相同 modifier |

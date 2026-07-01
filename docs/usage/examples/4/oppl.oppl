@@ -1,0 +1,19 @@
+read src.txt |> var doc
+
+var doc
+|> islands : start_with '/#![ ]*/' : - '/#![ ]*/'
+
+var doc
+|> scopes '/#[ a-zA-Z]+/' '/#[ a-zA-Z]+/' : keep_head : keep_tail
+|> each {
+     islands |> var islands
+
+     var islands
+     |> n 0
+     |> regex '/# *([a-zA-Z]+)/'
+     |> var name
+
+     var islands
+     |> ns 1..-2
+     |> write "#{name}.txt"
+}

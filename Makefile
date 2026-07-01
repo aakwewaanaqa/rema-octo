@@ -1,6 +1,9 @@
 do.test:
 	ruby tests/test_$1.rb
 
+do.test.example:
+	ruby bin/main.rb docs/usage/examples/$1/oppl.oppl
+
 do.test.ast:
 	make do.test 1=ast
 

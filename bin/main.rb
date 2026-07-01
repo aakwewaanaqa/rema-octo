@@ -29,6 +29,9 @@ unless parse_result.ok?
   fail!("PARSE_ERROR", err[:message], "Fix the syntax error in your .oppl file at #{err[:readable_pos]}")
 end
 
-result = iterate(parse_result[:instr])
+result = iterate(parse_result[:instr], nil, ::Shared::Context.new({
+  __FILE__: oppl_file,
+  __DIR__: File.dirname(oppl_file)
+}))
 
 puts JSON.generate({ ok: true, result: result })

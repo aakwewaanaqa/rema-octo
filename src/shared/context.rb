@@ -2,11 +2,13 @@ module Shared
   class Context
     attr_accessor :vars
 
-    def initialize
-      @vars = {}
+    def initialize(vars = {})
+      @vars = vars
     end
 
-    def [](key) = @vars[key]
+    def [](key)
+      @vars[key]
+    end
 
     def []=(key, val)
       @vars[key] = val

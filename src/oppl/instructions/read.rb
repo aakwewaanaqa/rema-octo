@@ -1,5 +1,6 @@
 module Oppl
   module Instructions
+    # reads a file as string by abs __FILE__ appending relative_path
     class Read
       def self.lsp_tokens(node)
         tokens = [{ pos: node.start_pos, length: node.name.length, type: :keyword }]
@@ -14,28 +15,10 @@ module Oppl
       end
 
       def self.call args, mods, val, ctx, &block
-        targets = []
-
-        args.each { |arg|
-          targets << arg
-        } unless args.nil? || args.empty?
-
-        case val
-          when String then targets << val
-          when Array then targets.concat(val) unless val.empty?
-        end
-
-        targets.each { |target|
-          next unless File.file? target
-          file_content = File.read target
-          block.(file_content) unless block.nil?
-        }
-
-        if targets.length == 1
-          return File.read targets[0]
-        end
-
-        nil
+        relative_path = args&.[](0) || val
+        oppl_path = ctx&.[](:__DIR__) || '.'
+        abs_path = File.join oppl_path, relative_path
+        File.read abs_path
       end
     end
   end

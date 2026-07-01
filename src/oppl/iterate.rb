@@ -11,8 +11,9 @@ module Oppl
       block_fn = node.block_instr ? -> (child_ctx, v = nil) { iterate(node.block_instr, v, child_ctx) } : nil
       wrapped = block_fn ? proc { |v = nil| block_fn.(ctx.child, v) } : nil
       { ok: true, result: klass.(args, mods, pipe_val, ctx, &wrapped) }
-    rescue NameError
-      { ok: false, error: { code: "UNKNOWN_INSTRUCTION", message: "Unknown instruction: #{node.name}" } }
+    rescue => e
+      puts e.full_message
+      return { ok: false, error: { message: e, file: "#{ctx&.[](:__FILE__)}:#{node.start_pos.line}" }}
     end
 
     def iterate(node, pipe_val = nil, ctx = ::Shared::Context.new)
